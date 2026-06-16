@@ -1,16 +1,27 @@
-<div class="container" style="padding: 2rem; font-family: sans-serif;">
-  <header style="border-bottom: 1px solid #ccc; margin-bottom: 2rem; padding-bottom: 1rem;">
-    <h1>CampusSync UnACh</h1>
-    <nav style="display: flex; gap: 1rem;">
-      <a href="#" style="text-decoration: none; color: blue;">Login/Registro</a>
-      <a href="#" style="text-decoration: none; color: blue;">Dashboard Alumno</a>
-      <a href="#" style="text-decoration: none; color: blue;">Dashboard Admin</a>
-    </nav>
+<div class="min-h-screen flex flex-col">
+  <!-- Navbar -->
+  <header class="bg-blue-600 shadow-md text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between h-16 items-center">
+        <div class="flex-shrink-0 flex items-center">
+          <h1 class="text-2xl font-bold tracking-tight">CampusSync <span class="font-light">UnACh</span></h1>
+        </div>
+        <nav class="flex space-x-4">
+          <a href="#" class="hover:bg-blue-700 px-3 py-2 rounded-md text-sm font-medium transition-colors">Inicio</a>
+          <a href="#" class="bg-blue-700 px-3 py-2 rounded-md text-sm font-medium shadow-sm">Ingresar</a>
+        </nav>
+      </div>
+    </div>
   </header>
   
-  <main>
+  <!-- Contenido Principal -->
+  <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+    <!-- Aquí se inyectarán las vistas con el Router de Angular -->
     <router-outlet></router-outlet>
-    <h2>Bienvenido a la Plataforma de Gestión de Actividades</h2>
-    <p>Selecciona tu rol en el menú para continuar.</p>
   </main>
+
+  <!-- Footer -->
+  <footer class="bg-white border-t py-4 text-center text-sm text-gray-500">
+    <p>&copy; 2026 CampusSync UnACh. Proyecto DevOps.</p>
+  </footer>
 </div>

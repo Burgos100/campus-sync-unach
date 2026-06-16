@@ -1,6 +1,13 @@
 const request = require('supertest');
 const app = require('./server');
 
+jest.mock('./db', () => ({
+  pool: {
+    query: jest.fn().mockResolvedValue([{ insertId: 1 }])
+  },
+  initDB: jest.fn()
+}));
+
 describe('API Endpoints', () => {
     it('should register a user', async () => {
         const res = await request(app)

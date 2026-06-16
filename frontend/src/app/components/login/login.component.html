@@ -1,0 +1,65 @@
+<div class="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-md mt-10">
+  <div class="p-8">
+    <div class="uppercase tracking-wide text-sm text-blue-600 font-semibold mb-1">
+      {{ isLoginMode ? 'Iniciar Sesión' : 'Crear Cuenta' }}
+    </div>
+    <p class="block mt-1 text-lg leading-tight font-medium text-black">
+      Bienvenido a CampusSync
+    </p>
+    
+    <div *ngIf="errorMessage" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mt-4">
+      <span class="block sm:inline">{{ errorMessage }}</span>
+    </div>
+
+    <form class="mt-6" (ngSubmit)="onSubmit()">
+      
+      <div *ngIf="!isLoginMode" class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="name">
+          Nombre Completo
+        </label>
+        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+               id="name" type="text" placeholder="Juan Pérez" [(ngModel)]="formData.name" name="name" required>
+      </div>
+
+      <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="email">
+          Correo Electrónico
+        </label>
+        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+               id="email" type="email" placeholder="correo@ejemplo.com" [(ngModel)]="formData.email" name="email" required>
+      </div>
+
+      <div class="mb-6">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="password">
+          Contraseña
+        </label>
+        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" 
+               id="password" type="password" placeholder="********" [(ngModel)]="formData.password" name="password" required>
+      </div>
+
+      <div *ngIf="!isLoginMode" class="mb-6">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="role">
+          Rol
+        </label>
+        <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                id="role" [(ngModel)]="formData.role" name="role">
+          <option value="Alumno">Alumno</option>
+          <option value="Admin">Administrador</option>
+        </select>
+      </div>
+
+      <div class="flex items-center justify-between">
+        <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full transition-colors" 
+                type="submit">
+          {{ isLoginMode ? 'Ingresar' : 'Registrarse' }}
+        </button>
+      </div>
+    </form>
+    
+    <div class="mt-4 text-center">
+      <a href="#" (click)="$event.preventDefault(); toggleMode()" class="inline-block align-baseline font-bold text-sm text-blue-600 hover:text-blue-800">
+        {{ isLoginMode ? '¿No tienes cuenta? Regístrate' : '¿Ya tienes cuenta? Inicia sesión' }}
+      </a>
+    </div>
+  </div>
+</div>
