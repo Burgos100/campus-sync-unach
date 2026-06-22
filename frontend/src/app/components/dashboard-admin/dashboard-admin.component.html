@@ -1,1 +1,77 @@
-<p>dashboard-admin works!</p>
+<div class="p-6 max-w-6xl mx-auto">
+  <div class="flex justify-between items-center border-b pb-4 mb-6">
+    <h2 class="text-2xl font-bold">Panel de Administración - {{ user?.name }}</h2>
+    <button (click)="logout()" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">Cerrar Sesión</button>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+    <!-- Crear Actividad -->
+    <div class="bg-gray-50 p-6 rounded-lg shadow-sm border">
+      <h3 class="text-xl font-semibold mb-4">Crear Actividad con IA ✨</h3>
+      <div class="mb-4">
+        <label class="block mb-2 font-medium">Título:</label>
+        <input type="text" [(ngModel)]="newActivityTitle" class="w-full p-2 border rounded">
+      </div>
+      <div class="mb-4">
+        <label class="block mb-2 font-medium">Tema para IA:</label>
+        <input type="text" [(ngModel)]="newActivityTopic" class="w-full p-2 border rounded mb-2">
+        <button (click)="generateDescription()" class="w-full bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">Generar Descripción</button>
+      </div>
+      <div *ngIf="generatedDescription" class="mb-4 p-4 bg-purple-50 rounded border border-purple-100">
+        <p class="text-sm text-purple-900">{{ generatedDescription }}</p>
+      </div>
+      <button (click)="createActivity()" [disabled]="!generatedDescription" class="w-full bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 disabled:opacity-50">Guardar Actividad</button>
+    </div>
+
+    <!-- Gestión -->
+    <div>
+      <h3 class="text-xl font-semibold mb-4">Gestión de Actividades</h3>
+      <div class="space-y-4">
+        <div *ngFor="let act of activities" class="p-4 border rounded shadow-sm bg-white">
+          <h4 class="font-bold text-lg text-blue-800">{{ act.title }}</h4>
+          <p class="text-gray-600 text-sm mb-3">{{ act.description }}</p>
+          <div class="flex gap-2">
+            <button (click)="viewParticipants(act)" class="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700">Participantes</button>
+            <button (click)="deleteActivity(act.id)" class="bg-red-100 text-red-600 px-3 py-1 rounded text-sm hover:bg-red-200">Eliminar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Participantes -->
+  <div *ngIf="selectedActivity" class="mt-8 p-6 bg-white border rounded-lg shadow-md">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-xl font-bold">Participantes: {{ selectedActivity.title }}</h3>
+      <button (click)="selectedActivity = null" class="text-gray-500 hover:text-gray-800">Cerrar</button>
+    </div>
+    
+    <table class="w-full text-left border-collapse">
+      <thead>
+        <tr class="bg-gray-100">
+          <th class="p-3 border-b">Nombre</th>
+          <th class="p-3 border-b">Correo</th>
+          <th class="p-3 border-b">Asistencia</th>
+          <th class="p-3 border-b">Acción</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let p of participants">
+          <td class="p-3 border-b">{{ p.name }}</td>
+          <td class="p-3 border-b">{{ p.email }}</td>
+          <td class="p-3 border-b">
+            <span [class]="p.attended ? 'text-green-600 font-bold' : 'text-red-500'">{{ p.attended ? 'Presente' : 'Ausente' }}</span>
+          </td>
+          <td class="p-3 border-b">
+            <button (click)="toggleAttendance(p.enrollment_id, p.attended)" class="bg-gray-200 px-3 py-1 rounded text-sm hover:bg-gray-300">
+              Marcar {{ p.attended ? 'Ausente' : 'Presente' }}
+            </button>
+          </td>
+        </tr>
+        <tr *ngIf="participants.length === 0">
+          <td colspan="4" class="p-4 text-center text-gray-500">No hay participantes inscritos.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
