@@ -1,0 +1,50 @@
+<div style="padding: 2rem; max-width: 900px; margin: 0 auto; font-family: sans-serif;">
+  <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; padding-bottom: 1rem; margin-bottom: 2rem;">
+    <h2>Dashboard - Bienvenido, {{ user?.name }} ({{ user?.role }})</h2>
+    <button (click)="logout()" style="padding: 8px 16px; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;">Cerrar Sesión</button>
+  </div>
+
+  <div style="display: flex; gap: 2rem;">
+    
+    <!-- Crear Actividad (Módulo IA) -->
+    <div style="flex: 1; background: #f8f9fa; padding: 1.5rem; border-radius: 8px;">
+      <h3>Crear Actividad con IA ✨</h3>
+      <div style="margin-bottom: 1rem;">
+        <label style="display: block; margin-bottom: .5rem;">Título de la actividad:</label>
+        <input type="text" [(ngModel)]="newActivityTitle" style="width: 100%; padding: 8px; box-sizing: border-box;">
+      </div>
+      <div style="margin-bottom: 1rem;">
+        <label style="display: block; margin-bottom: .5rem;">Tema para que la IA genere la descripción:</label>
+        <input type="text" [(ngModel)]="newActivityTopic" placeholder="Ej. Taller de Node.js Avanzado" style="width: 100%; padding: 8px; box-sizing: border-box;">
+        <button (click)="generateDescription()" style="margin-top: 10px; width: 100%; padding: 8px; background: #6f42c1; color: white; border: none; border-radius: 4px; cursor: pointer;">
+          Generar Descripción con IA
+        </button>
+      </div>
+
+      <div *ngIf="generatedDescription" style="margin-bottom: 1rem; padding: 1rem; background: #e9ecef; border-radius: 4px;">
+        <strong>Descripción generada:</strong>
+        <p>{{ generatedDescription }}</p>
+      </div>
+
+      <button (click)="createActivity()" [disabled]="!generatedDescription" style="width: 100%; padding: 10px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;" [style.opacity]="!generatedDescription ? '0.5' : '1'">
+        Guardar Actividad
+      </button>
+    </div>
+
+    <!-- Lista de Actividades -->
+    <div style="flex: 1;">
+      <h3>Actividades Disponibles</h3>
+      <div *ngIf="activities.length === 0" style="color: #666;">
+        No hay actividades creadas.
+      </div>
+      <div *ngFor="let activity of activities" style="border: 1px solid #ddd; padding: 1rem; margin-bottom: 1rem; border-radius: 4px;">
+        <h4 style="margin-top: 0; margin-bottom: .5rem; color: #0056b3;">{{ activity.title }}</h4>
+        <p style="color: #444; font-size: 0.95rem;">{{ activity.description }}</p>
+        <button (click)="enroll(activity.id)" style="padding: 6px 12px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
+          Inscribirme
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>

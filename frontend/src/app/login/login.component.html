@@ -1,0 +1,24 @@
+<div style="display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f4f5f7;">
+  <div style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 350px;">
+    <h2 style="text-align: center; color: #333;">CampusSync UnACh</h2>
+    <p style="text-align: center; color: #666; margin-bottom: 1.5rem;">Gestión de Actividades</p>
+
+    <div style="margin-bottom: 1rem;">
+      <label style="display: block; margin-bottom: .5rem; color: #555;">Nombre (solo para registro)</label>
+      <input type="text" [(ngModel)]="name" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+    </div>
+    <div style="margin-bottom: 1rem;">
+      <label style="display: block; margin-bottom: .5rem; color: #555;">Correo Electrónico</label>
+      <input type="email" [(ngModel)]="email" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+    </div>
+    <div style="margin-bottom: 1.5rem;">
+      <label style="display: block; margin-bottom: .5rem; color: #555;">Contraseña</label>
+      <input type="password" [(ngModel)]="password" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+    </div>
+    
+    <div style="display: flex; gap: 10px;">
+      <button (click)="login()" style="flex: 1; padding: 10px; background: #0056b3; color: white; border: none; border-radius: 4px; cursor: pointer;">Ingresar</button>
+      <button (click)="register()" style="flex: 1; padding: 10px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;">Registrarse</button>
+    </div>
+  </div>
+</div>

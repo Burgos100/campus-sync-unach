@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const { pool, initDB } = require('./db');
+const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 dotenv.config();
 
@@ -10,7 +11,9 @@ app.use(cors());
 app.use(express.json());
 
 // Initialize Database
-initDB();
+if (process.env.NODE_ENV !== "test") {
+    initDB();
+}
 
 // API Endpoints
 app.post('/api/users/register', async (req, res) => {
@@ -84,17 +87,39 @@ app.post('/api/participantes', async (req, res) => {
     }
 });
 
-app.post('/api/generate-description', (req, res) => {
-    const { topic } = req.body;
-    // Simulate AI generation
-    res.json({ description: `Actividad generada automáticamente sobre ${topic}. Aprenderás sobre ${topic} y su aplicación en la universidad.` });
+app.post("/api/generate-description", async (req, res) => {
+  const { topic } = req.body;
+
+  // Si no hay API KEY (como en el entorno de testing local), usar fallback
+  if (!process.env.GEMINI_API_KEY) {
+    return res.json({
+      description: `Actividad generada automáticamente sobre ${topic}. Aprenderás sobre ${topic} y su aplicación en la universidad.`,
+    });
+  }
+
+  try {
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    // Usamos gemini-1.5-flash porque es el modelo por defecto gratuito y rápido
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+    const prompt = `Actúa como un coordinador académico. Escribe una descripción breve y atractiva (máximo 3 líneas) para una actividad universitaria sobre el tema: "${topic}".`;
+
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const text = response.text();
+
+    res.json({ description: text });
+  } catch (error) {
+    console.error("Error generating AI content:", error);
+    res.status(500).json({ error: "Error al generar la descripción con IA" });
+  }
 });
 
 module.exports = app;
 
 if (require.main === module) {
-    const port = process.env.PORT || 3000;
-    app.listen(port, () => {
-        console.log(`Server running on port ${port}`);
-    });
+  const port = process.env.PORT || 3000;
+  app.listen(port, () => {
+    console.log(`Server running on port ${port}`);
+  });
 }

@@ -24,6 +24,9 @@ jobs:
       - name: Install Dependencies (Backend)
         run: cd backend && npm install
 
+      - name: Lint Backend (ESLint)
+        run: cd backend && npm run lint
+
       - name: Install Dependencies (Frontend)
         run: cd frontend && npm install
 

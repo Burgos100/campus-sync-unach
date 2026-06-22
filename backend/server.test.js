@@ -1,32 +1,51 @@
-const request = require('supertest');
-const app = require('./server');
+// Set test environment before requiring anything else
+process.env.NODE_ENV = "test";
+
+const request = require("supertest");
 
 jest.mock('./db', () => ({
   pool: {
-    query: jest.fn().mockResolvedValue([{ insertId: 1 }])
+    query: jest.fn((query) => {
+        if (query.includes("INSERT INTO users")) {
+          return Promise.resolve([[{ insertId: 1 }]]);
+        }
+        if (query.includes("SELECT * FROM users")) {
+          return Promise.resolve([
+            [
+              {
+                id: 1,
+                name: "Test",
+                email: "test@example.com",
+                role: "Alumno",
+              },
+            ],
+          ]);
+        }
+        return Promise.resolve([[]]);
+      })
   },
   initDB: jest.fn()
 }));
 
-describe('API Endpoints', () => {
-    it('should register a user', async () => {
-        const res = await request(app)
-            .post('/api/users/register')
-            .send({
-                name: 'Test',
-                email: 'test@example.com',
-                password: 'password123'
-            });
-        expect(res.statusCode).toEqual(201);
-        expect(res.body).toHaveProperty('user');
-    });
+const app = require("./server");
 
-    it('should generate AI description', async () => {
-        const res = await request(app)
-            .post('/api/generate-description')
-            .send({ topic: 'Docker' });
-        expect(res.statusCode).toEqual(200);
-        expect(res.body).toHaveProperty('description');
-        expect(res.body.description).toContain('Docker');
+describe("API Endpoints", () => {
+  it("should register a user", async () => {
+    const res = await request(app).post("/api/users/register").send({
+      name: "Test",
+      email: "test@example.com",
+      password: "password123",
     });
+    expect(res.statusCode).toEqual(201);
+    expect(res.body).toHaveProperty("user");
+  });
+
+  it("should generate AI description", async () => {
+    const res = await request(app)
+      .post("/api/generate-description")
+      .send({ topic: "Docker" });
+    expect(res.statusCode).toEqual(200);
+    expect(res.body).toHaveProperty("description");
+    expect(res.body.description).toContain("Docker");
+  });
 });
