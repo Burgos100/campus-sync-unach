@@ -115,6 +115,53 @@ app.post("/api/generate-description", async (req, res) => {
   }
 });
 
+app.put('/api/activities/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { title, description } = req.body;
+        await pool.query('UPDATE activities SET title = ?, description = ? WHERE id = ?', [title, description, id]);
+        res.json({ message: 'Activity updated successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error updating activity', error: error.message });
+    }
+});
+
+app.delete('/api/activities/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        await pool.query('DELETE FROM activities WHERE id = ?', [id]);
+        res.json({ message: 'Activity deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error deleting activity', error: error.message });
+    }
+});
+
+app.get('/api/activities/:id/participantes', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const [rows] = await pool.query(`
+            SELECT e.id as enrollment_id, u.name, u.email, e.attended 
+            FROM enrollments e 
+            JOIN users u ON e.user_id = u.id 
+            WHERE e.activity_id = ?
+        `, [id]);
+        res.json(rows);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching participants', error: error.message });
+    }
+});
+
+app.put('/api/participantes/:id/asistencia', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { attended } = req.body;
+        await pool.query('UPDATE enrollments SET attended = ? WHERE id = ?', [attended, id]);
+        res.json({ message: 'Attendance updated' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error updating attendance', error: error.message });
+    }
+});
+
 module.exports = app;
 
 if (require.main === module) {

@@ -1,1 +1,21 @@
-<p>dashboard-alumno works!</p>
+<div class="p-6 max-w-5xl mx-auto">
+  <div class="flex justify-between items-center border-b pb-4 mb-6">
+    <h2 class="text-2xl font-bold">Portal del Alumno - {{ user?.name }}</h2>
+    <button (click)="logout()" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">Cerrar Sesión</button>
+  </div>
+
+  <h3 class="text-xl font-semibold mb-4 text-blue-800">Actividades Disponibles</h3>
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div *ngFor="let act of activities" class="p-5 border rounded-lg shadow-sm bg-white hover:shadow-md transition-shadow">
+      <h4 class="font-bold text-lg mb-2 text-gray-800">{{ act.title }}</h4>
+      <p class="text-gray-600 text-sm mb-4 min-h-[60px]">{{ act.description }}</p>
+      <button (click)="enroll(act.id)" class="w-full bg-blue-600 text-white px-4 py-2 rounded font-medium hover:bg-blue-700">
+        Inscribirme
+      </button>
+    </div>
+    
+    <div *ngIf="activities.length === 0" class="col-span-full p-8 text-center text-gray-500 bg-gray-50 rounded-lg border">
+      Aún no hay actividades publicadas por la universidad.
+    </div>
+  </div>
+</div>

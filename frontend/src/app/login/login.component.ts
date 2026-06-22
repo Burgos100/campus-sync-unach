@@ -25,7 +25,11 @@ export class LoginComponent {
     this.http.post(`${this.apiUrl}/users/login`, { email: this.email, password: this.password }).subscribe({
       next: (res: any) => {
         localStorage.setItem('user', JSON.stringify(res.user));
-        this.router.navigate(['/dashboard']);
+        if (res.user.role === 'Admin') {
+          this.router.navigate(['/admin']);
+        } else {
+          this.router.navigate(['/alumno']);
+        }
       },
       error: (err) => alert('Login fallido: ' + (err.error?.message || 'Error'))
     });
