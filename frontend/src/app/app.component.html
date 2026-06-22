@@ -6,9 +6,27 @@
         <div class="flex-shrink-0 flex items-center">
           <h1 class="text-2xl font-bold tracking-tight">CampusSync <span class="font-light">UnACh</span></h1>
         </div>
-        <nav class="flex space-x-4">
-          <a href="#" class="hover:bg-blue-700 px-3 py-2 rounded-md text-sm font-medium transition-colors">Inicio</a>
-          <a href="#" class="bg-blue-700 px-3 py-2 rounded-md text-sm font-medium shadow-sm">Ingresar</a>
+        <nav class="flex space-x-4 items-center">
+          <!-- NO LOGEADO -->
+          <ng-container *ngIf="!user">
+            <a routerLink="/login" class="hover:bg-blue-700 px-3 py-2 rounded-md text-sm font-medium transition-colors">Inicio</a>
+            <a routerLink="/login" class="bg-blue-700 px-3 py-2 rounded-md text-sm font-medium shadow-sm">Ingresar</a>
+          </ng-container>
+
+          <!-- ADMIN -->
+          <ng-container *ngIf="user?.role === 'Admin'">
+            <a routerLink="/admin" routerLinkActive="bg-blue-800" [routerLinkActiveOptions]="{exact: true}" class="hover:bg-blue-700 px-3 py-2 rounded-md text-sm font-medium transition-colors">Actividades</a>
+            <a routerLink="/admin/usuarios" routerLinkActive="bg-blue-800" class="hover:bg-blue-700 px-3 py-2 rounded-md text-sm font-medium transition-colors">Usuarios</a>
+            <a routerLink="/admin/reportes" routerLinkActive="bg-blue-800" class="hover:bg-blue-700 px-3 py-2 rounded-md text-sm font-medium transition-colors">Reportes IA</a>
+            <button (click)="logout()" class="ml-4 bg-red-600 hover:bg-red-700 px-3 py-2 rounded-md text-sm font-medium shadow-sm transition-colors">Cerrar Sesión</button>
+          </ng-container>
+
+          <!-- ALUMNO -->
+          <ng-container *ngIf="user?.role === 'Alumno'">
+            <a routerLink="/alumno" routerLinkActive="bg-blue-800" [routerLinkActiveOptions]="{exact: true}" class="hover:bg-blue-700 px-3 py-2 rounded-md text-sm font-medium transition-colors">Explorar Actividades</a>
+            <a routerLink="/alumno/mis-inscripciones" routerLinkActive="bg-blue-800" class="hover:bg-blue-700 px-3 py-2 rounded-md text-sm font-medium transition-colors">Mis Inscripciones</a>
+            <button (click)="logout()" class="ml-4 bg-red-600 hover:bg-red-700 px-3 py-2 rounded-md text-sm font-medium shadow-sm transition-colors">Cerrar Sesión</button>
+          </ng-container>
         </nav>
       </div>
     </div>
@@ -16,7 +34,6 @@
   
   <!-- Contenido Principal -->
   <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
-    <!-- Aquí se inyectarán las vistas con el Router de Angular -->
     <router-outlet></router-outlet>
   </main>
 
