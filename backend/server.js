@@ -99,8 +99,8 @@ app.post("/api/generate-description", async (req, res) => {
 
   try {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    // Usamos gemini-1.5-flash porque es el modelo por defecto gratuito y rápido
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    // Usamos gemini-2.5-flash porque es la versión estable y rápida soportada actualmente
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
     const prompt = `Actúa como un coordinador académico. Escribe una descripción breve y atractiva (máximo 3 líneas) para una actividad universitaria sobre el tema: "${topic}".`;
 
