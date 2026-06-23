@@ -26,7 +26,7 @@ chmod +x /usr/local/bin/docker-compose
 # git clone https://<TU_TOKEN>@github.com/tu-usuario/tu-repo.git campus-sync
 
 cd /home/ubuntu
-git clone https://github.com/tu-usuario/campus-sync.git campus-sync
+git clone https://github.com/Burgos100/campus-sync-unach.git
 cd campus-sync
 
 # 5. Configurar Variables de Entorno de forma segura (.env)
@@ -36,7 +36,7 @@ DB_NAME=campussync
 DB_USER=admin
 DB_PASSWORD=admin_password_seguro
 PORT=3000
-GEMINI_API_KEY=tu_clave_real_de_gemini
+GEMINI_API_KEY=AQ.Ab8RN6LOU31Cem5WYvEpw46eOB0IbbyWn1u8rWfoNwcsnNqnaQ
 EOT
 
 # Ajustar permisos para el usuario ubuntu
