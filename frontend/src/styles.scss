@@ -2,10 +2,33 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Añade cualquier estilo global base aquí */
 html, body {
-  @apply bg-gray-50 text-gray-900;
   height: 100%;
   margin: 0;
   font-family: 'Inter', sans-serif;
+  @apply bg-background text-on-surface;
+}
+
+.material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    vertical-align: middle;
+}
+
+.bento-card-gradient {
+    background: linear-gradient(135deg, #ffffff 0%, #f7f9fb 100%);
+}
+
+.primary-accent-bar {
+    position: relative;
+}
+
+.primary-accent-bar::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background-color: #004ac6;
+    border-radius: 4px 0 0 4px;
 }

@@ -55,6 +55,30 @@ const initDB = async () => {
         )
       `);
 
+      // Create Dashboard Metrics table
+      await connection.query(`
+        CREATE TABLE IF NOT EXISTS dashboard_metrics (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          precision_ia INT DEFAULT 98,
+          latencia FLOAT DEFAULT 1.2,
+          satisfaccion FLOAT DEFAULT 4.8,
+          asistencia_total INT DEFAULT 1240,
+          actividades_mes INT DEFAULT 28,
+          tasa_asistencia INT DEFAULT 92,
+          updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        )
+      `);
+
+      // Insert default metrics if empty
+      const [rows] = await connection.query('SELECT COUNT(*) as count FROM dashboard_metrics');
+      if (rows[0].count === 0) {
+        await connection.query(`
+          INSERT INTO dashboard_metrics 
+          (precision_ia, latencia, satisfaccion, asistencia_total, actividades_mes, tasa_asistencia) 
+          VALUES (98, 1.2, 4.8, 1240, 28, 92)
+        `);
+      }
+
       connection.release();
       console.log('Database initialized successfully.');
       break; // Salimos del bucle si fue exitoso

@@ -1,57 +1,77 @@
-<div class="min-h-screen flex flex-col bg-gray-50 font-sans">
-  <!-- Navbar -->
-  <header class="bg-indigo-700 shadow-md text-white sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex justify-between h-16 items-center">
-        <div class="flex-shrink-0 flex items-center gap-2">
-          <svg class="w-8 h-8 text-indigo-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
-          <h1 class="text-2xl font-extrabold tracking-tight">CampusSync <span class="font-light text-indigo-200">UnACh</span></h1>
+<div class="bg-background font-body-md text-on-background min-h-screen">
+  <!-- TopNavBar -->
+  <header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-4 md:px-margin-desktop h-16 bg-surface/95 backdrop-blur-sm border-b border-outline-variant">
+    <div class="flex items-center gap-8">
+      <span class="text-headline-md font-headline-md font-bold text-primary">CampusSync UnACh</span>
+      <nav class="hidden md:flex items-center gap-6" *ngIf="user">
+        <ng-container *ngIf="user.role === 'Admin'">
+          <a routerLink="/admin" class="text-secondary hover:text-primary transition-colors text-label-sm font-label-sm">Actividades</a>
+          <a routerLink="/admin/usuarios" class="text-secondary hover:text-primary transition-colors text-label-sm font-label-sm">Usuarios</a>
+          <a routerLink="/admin/reportes" class="text-secondary hover:text-primary transition-colors text-label-sm font-label-sm">Reportes</a>
+        </ng-container>
+      </nav>
+    </div>
+    <div class="flex items-center gap-4">
+      <ng-container *ngIf="user">
+        <div class="relative hidden sm:block">
+          <input class="bg-surface-container-low border border-outline-variant rounded-full px-4 py-1.5 text-label-sm w-64 focus:ring-2 focus:ring-primary/20 outline-none" placeholder="Buscar..." type="text"/>
+          <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-secondary scale-75">search</span>
         </div>
-        <nav class="flex space-x-1 sm:space-x-4 items-center">
-          <!-- NO LOGEADO -->
-          <ng-container *ngIf="!user">
-            <a routerLink="/login" class="hover:bg-indigo-600 px-3 py-2 rounded-lg text-sm font-medium transition-all">Inicio</a>
-            <a routerLink="/login" class="bg-white text-indigo-700 hover:bg-indigo-50 px-4 py-2 rounded-lg text-sm font-bold shadow-sm transition-all ml-2">Ingresar</a>
-          </ng-container>
-
-          <!-- ADMIN -->
-          <ng-container *ngIf="user?.role === 'Admin'">
-            <a routerLink="/admin" routerLinkActive="bg-indigo-800 shadow-inner" [routerLinkActiveOptions]="{exact: true}" class="hover:bg-indigo-600 px-3 py-2 rounded-lg text-sm font-medium transition-all">Actividades</a>
-            <a routerLink="/admin/usuarios" routerLinkActive="bg-indigo-800 shadow-inner" class="hover:bg-indigo-600 px-3 py-2 rounded-lg text-sm font-medium transition-all">Usuarios</a>
-            <a routerLink="/admin/reportes" routerLinkActive="bg-indigo-800 shadow-inner" class="hover:bg-indigo-600 px-3 py-2 rounded-lg text-sm font-medium transition-all">Reportes IA</a>
-            <button (click)="logout()" class="ml-4 bg-indigo-800 border border-indigo-500 hover:bg-red-600 hover:border-red-600 px-4 py-2 rounded-lg text-sm font-medium shadow-sm transition-all flex items-center gap-2">
-              <span>Cerrar Sesión</span>
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-            </button>
-          </ng-container>
-
-          <!-- ALUMNO -->
-          <ng-container *ngIf="user?.role === 'Alumno'">
-            <a routerLink="/alumno" routerLinkActive="bg-indigo-800 shadow-inner" [routerLinkActiveOptions]="{exact: true}" class="hover:bg-indigo-600 px-3 py-2 rounded-lg text-sm font-medium transition-all">Explorar</a>
-            <a routerLink="/alumno/mis-inscripciones" routerLinkActive="bg-indigo-800 shadow-inner" class="hover:bg-indigo-600 px-3 py-2 rounded-lg text-sm font-medium transition-all">Mis Inscripciones</a>
-            <button (click)="logout()" class="ml-4 bg-indigo-800 border border-indigo-500 hover:bg-red-600 hover:border-red-600 px-4 py-2 rounded-lg text-sm font-medium shadow-sm transition-all flex items-center gap-2">
-              <span>Cerrar Sesión</span>
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-            </button>
-          </ng-container>
-        </nav>
-      </div>
+        <button (click)="logout()" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-surface-variant/30 text-primary hover:bg-surface-variant/50 transition-all text-label-sm font-label-sm">
+          Cerrar Sesión
+          <span class="material-symbols-outlined text-[18px]">logout</span>
+        </button>
+        <div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-white font-bold overflow-hidden border-2 border-white shadow-sm">
+          <span class="material-symbols-outlined">person</span>
+        </div>
+      </ng-container>
+      <ng-container *ngIf="!user">
+        <a routerLink="/login" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-white hover:bg-primary/90 transition-all text-label-sm font-label-sm">
+          Ingresar
+        </a>
+      </ng-container>
     </div>
   </header>
-  
-  <!-- Contenido Principal -->
-  <main class="flex-grow w-full">
+
+  <!-- SideNavBar (Hidden on Mobile) -->
+  <aside *ngIf="user" class="hidden lg:flex flex-col h-screen fixed left-0 top-0 pt-20 p-4 w-64 bg-surface-container-low border-r border-outline-variant z-40">
+    <div class="mb-8 px-4">
+      <h2 class="text-headline-md font-headline-md font-extrabold text-primary">Portal Académico</h2>
+      <p class="text-label-sm font-label-sm text-secondary opacity-70">CampusSync v2.0</p>
+    </div>
+    <nav class="space-y-2 flex-grow">
+      <!-- Admin links -->
+      <ng-container *ngIf="user.role === 'Admin'">
+        <a routerLink="/admin" routerLinkActive="bg-secondary-container text-on-secondary-container font-semibold" [routerLinkActiveOptions]="{exact: true}" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant/50 rounded-lg transition-all text-label-sm font-label-sm">
+          <span class="material-symbols-outlined">explore</span>
+          <span>Panel Principal</span>
+        </a>
+        <a routerLink="/admin/usuarios" routerLinkActive="bg-secondary-container text-on-secondary-container font-semibold" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant/50 rounded-lg transition-all text-label-sm font-label-sm">
+          <span class="material-symbols-outlined">group</span>
+          <span>Usuarios</span>
+        </a>
+        <a routerLink="/admin/reportes" routerLinkActive="bg-secondary-container text-on-secondary-container font-semibold" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant/50 rounded-lg transition-all text-label-sm font-label-sm">
+          <span class="material-symbols-outlined">analytics</span>
+          <span>Reportes IA</span>
+        </a>
+      </ng-container>
+
+      <!-- Alumno links -->
+      <ng-container *ngIf="user.role === 'Alumno'">
+        <a routerLink="/alumno" routerLinkActive="bg-secondary-container text-on-secondary-container font-semibold" [routerLinkActiveOptions]="{exact: true}" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant/50 rounded-lg transition-all text-label-sm font-label-sm">
+          <span class="material-symbols-outlined">explore</span>
+          <span>Explorar</span>
+        </a>
+        <a routerLink="/alumno/mis-inscripciones" routerLinkActive="bg-secondary-container text-on-secondary-container font-semibold" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant/50 rounded-lg transition-all text-label-sm font-label-sm">
+          <span class="material-symbols-outlined">assignment_turned_in</span>
+          <span>Mis Inscripciones</span>
+        </a>
+      </ng-container>
+    </nav>
+  </aside>
+
+  <!-- Main Content Canvas -->
+  <main [class.lg:ml-64]="user" class="pt-24 pb-12 px-4 md:px-margin-desktop min-h-screen">
     <router-outlet></router-outlet>
   </main>
-
-  <!-- Footer -->
-  <footer class="bg-white border-t border-gray-200 py-6 text-center text-sm text-gray-500 mt-auto">
-    <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-4">
-      <p>&copy; 2026 CampusSync UnACh. Todos los derechos reservados.</p>
-      <div class="flex items-center gap-2 text-indigo-600 font-medium bg-indigo-50 px-3 py-1 rounded-full">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-        Proyecto DevOps
-      </div>
-    </div>
-  </footer>
 </div>

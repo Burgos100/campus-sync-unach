@@ -1,10 +1,8 @@
+const fs = require('fs');
+let content = fs.readFileSync('dashboard_admin_main.html', 'utf-8');
 
-<div class="max-w-container-max mx-auto">
-<!-- Header Welcome Card -->
-<div class="bg-surface-container-lowest rounded-xl p-8 mb-8 card-shadow border-l-4 border-primary">
-<h1 class="text-headline-xl font-headline-xl text-on-surface mb-2">Panel de Administración</h1>
-<p class="text-body-lg font-body-lg text-secondary">Bienvenido, <span class="font-bold">{{ user?.name }}</span></p>
-</div>
+// Inject error/success messages after the header card
+content = content.replace(/(<div class="bg-surface-container-lowest rounded-xl p-8 mb-8 card-shadow border-l-4 border-primary">[\s\S]*?<\/div>)/, `$1
 <div *ngIf="errorMessage" class="bg-error/10 text-error px-4 py-3 rounded-xl text-sm font-medium border border-error/20 flex items-center gap-2 mb-6">
   <span class="material-symbols-outlined">error</span>
   <span>{{ errorMessage }}</span>
@@ -12,41 +10,42 @@
 <div *ngIf="successMessage" class="bg-tertiary/10 text-tertiary px-4 py-3 rounded-xl text-sm font-medium border border-tertiary/20 flex items-center gap-2 mb-6">
   <span>{{ successMessage }}</span>
 </div>
+`);
 
-<!-- Bento Grid Layout -->
-<div class="bento-grid">
-<!-- Left Column: Creation Form -->
-<section class="bg-surface-container-lowest rounded-xl p-8 card-shadow flex flex-col h-full">
-<div class="flex items-center gap-3 mb-8">
-<span class="material-symbols-outlined text-primary text-3xl">add_circle</span>
-<h2 class="text-headline-md font-headline-md text-on-surface">Crear Actividad con IA</h2>
-</div>
-<div class="space-y-6 flex-grow">
-<div>
-<label class="block text-label-sm font-label-sm text-secondary mb-2">Título de la actividad</label>
-<input [(ngModel)]="newActivityTitle" class="w-full bg-surface-container-low border border-outline-variant rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-body-md font-body-md" placeholder="Ej: Taller de Docker" type="text"/>
-</div>
-<div class="relative">
-<label class="block text-label-sm font-label-sm text-secondary mb-2">Tema para generar descripción</label>
-<div class="flex gap-2">
-<input [(ngModel)]="newActivityTopic" class="flex-grow bg-surface-container-low border border-outline-variant rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-body-md font-body-md" placeholder="Ej: Introducción a contenedores" type="text"/>
-<button (click)="generateDescription()" class="bg-primary text-on-primary px-6 py-2 rounded-lg font-bold hover:brightness-110 active:scale-95 transition-all text-label-sm font-label-sm">Generar</button>
-</div>
-</div>
-<div class="p-6 rounded-xl bg-surface-container-lowest border-2 border-dashed border-outline-variant/30 min-h-[160px] flex items-center justify-center relative">
+// Crear Actividad Form
+content = content.replace(
+  '<input class="w-full bg-surface-container-low border border-outline-variant rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-body-md font-body-md" placeholder="Ej: Taller de Docker" type="text"/>',
+  '<input [(ngModel)]="newActivityTitle" class="w-full bg-surface-container-low border border-outline-variant rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-body-md font-body-md" placeholder="Ej: Taller de Docker" type="text"/>'
+);
+
+content = content.replace(
+  '<input class="flex-grow bg-surface-container-low border border-outline-variant rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-body-md font-body-md" placeholder="Ej: Introducción a contenedores" type="text"/>',
+  '<input [(ngModel)]="newActivityTopic" class="flex-grow bg-surface-container-low border border-outline-variant rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-body-md font-body-md" placeholder="Ej: Introducción a contenedores" type="text"/>'
+);
+
+content = content.replace(
+  '<button class="bg-primary text-on-primary px-6 py-2 rounded-lg font-bold hover:brightness-110 active:scale-95 transition-all text-label-sm font-label-sm">\n                                    Generar\n                                </button>',
+  '<button (click)="generateDescription()" class="bg-primary text-on-primary px-6 py-2 rounded-lg font-bold hover:brightness-110 active:scale-95 transition-all text-label-sm font-label-sm">Generar</button>'
+);
+
+content = content.replace(
+  /<div class="p-6 rounded-xl bg-surface-container-lowest border-2 border-dashed border-outline-variant\/30 min-h-\[160px\] flex items-center justify-center">[\s\S]*?<\/div>/,
+  `<div class="p-6 rounded-xl bg-surface-container-lowest border-2 border-dashed border-outline-variant/30 min-h-[160px] flex items-center justify-center relative">
     <p *ngIf="!generatedDescription" class="text-body-md font-body-md text-secondary italic opacity-60 text-center">La descripción generada por IA aparecerá aquí...</p>
     <p *ngIf="generatedDescription" class="text-body-md font-body-md text-primary">{{ generatedDescription }}</p>
-  </div>
-</div>
-<button (click)="createActivity()" [disabled]="!generatedDescription || !newActivityTitle" class="mt-8 w-full bg-tertiary-fixed-dim text-on-tertiary-fixed-variant font-bold py-4 rounded-xl shadow-sm hover:shadow-md active:scale-95 transition-all text-headline-md disabled:opacity-50 disabled:cursor-not-allowed">Guardar Actividad</button>
-</section>
-<!-- Right Column: Management List -->
-<section class="bg-surface-container-lowest rounded-xl p-8 card-shadow flex flex-col h-full">
-<div class="flex items-center gap-3 mb-8">
-<span class="material-symbols-outlined text-primary text-3xl" data-icon="subject">subject</span>
-<h2 class="text-headline-md font-headline-md text-on-surface">Gestión de Actividades</h2>
-</div>
-<div class="space-y-4 overflow-y-auto max-h-[600px] pr-2">
+  </div>`
+);
+
+content = content.replace(
+  /<button class="mt-8 w-full bg-tertiary-fixed-dim text-on-tertiary-fixed-variant font-bold py-4 rounded-xl shadow-sm hover:shadow-md active:scale-95 transition-all text-headline-md">[\s\S]*?<\/button>/,
+  `<button (click)="createActivity()" [disabled]="!generatedDescription || !newActivityTitle" class="mt-8 w-full bg-tertiary-fixed-dim text-on-tertiary-fixed-variant font-bold py-4 rounded-xl shadow-sm hover:shadow-md active:scale-95 transition-all text-headline-md disabled:opacity-50 disabled:cursor-not-allowed">Guardar Actividad</button>`
+);
+
+// Gestión List
+const listRegex = /<div class="space-y-4 overflow-y-auto max-h-\[600px\] pr-2">([\s\S]*?)<\/div>\n<\/section>/;
+const listMatch = content.match(listRegex);
+if (listMatch) {
+  const newList = `<div class="space-y-4 overflow-y-auto max-h-[600px] pr-2">
     <div *ngIf="activities.length === 0" class="text-center py-10 text-secondary">No hay actividades creadas.</div>
     <div *ngFor="let act of activities" class="p-6 rounded-xl bg-surface-container-low border border-outline-variant hover:border-primary/30 transition-all group">
       <div class="flex justify-between items-start mb-4">
@@ -63,44 +62,12 @@
         <button (click)="deleteActivity(act.id)" class="px-4 py-2.5 text-error font-bold text-label-sm font-label-sm hover:bg-error-container/20 rounded-lg transition-all">Eliminar</button>
       </div>
     </div>
-  </div>
-</section>
-</div>
-<!-- Stats/Footer Section -->
-<div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6" *ngIf="metrics">
-<div class="bg-primary-container p-6 rounded-xl text-on-primary-container flex items-center gap-4">
-<div class="bg-on-primary-container/20 p-3 rounded-full">
-<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">groups</span>
-</div>
-<div>
-<p class="text-label-sm font-label-sm opacity-80">Total Usuarios</p>
-<h4 class="text-headline-xl font-headline-xl">{{ metrics.usuarios_reales | number }}</h4>
-</div>
-</div>
-<div class="bg-secondary-container p-6 rounded-xl text-on-secondary-container flex items-center gap-4">
-<div class="bg-on-secondary-container/20 p-3 rounded-full">
-<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">event_available</span>
-</div>
-<div>
-<p class="text-label-sm font-label-sm opacity-80">Actividades Mes</p>
-<h4 class="text-headline-xl font-headline-xl">{{ metrics.actividades_mes }}</h4>
-</div>
-</div>
-<div class="bg-tertiary-container p-6 rounded-xl text-on-tertiary-container flex items-center gap-4">
-<div class="bg-on-tertiary-container/20 p-3 rounded-full">
-<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">verified</span>
-</div>
-<div>
-<p class="text-label-sm font-label-sm opacity-80">Tasa Asistencia</p>
-<h4 class="text-headline-xl font-headline-xl">{{ metrics.tasa_asistencia }}%</h4>
-</div>
-</div>
-</div>
-<div class="mt-12 text-center text-secondary" *ngIf="!metrics">
-  <p>Cargando métricas del sistema...</p>
-</div>
-</div>
+  </div>\n</section>`;
+  content = content.replace(listRegex, newList);
+}
 
+// Append Modal
+const modalCode = `
   <!-- Modal Participantes -->
   <div *ngIf="selectedActivity" class="fixed inset-0 bg-on-background/50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
     <div class="bg-surface-container-lowest rounded-2xl shadow-xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden">
@@ -150,3 +117,11 @@
       </div>
     </div>
   </div>
+`;
+
+content += modalCode;
+
+content = content.replace(/Lucas Antonio Burgos Loyola/g, "{{ user?.name }}");
+
+fs.writeFileSync('frontend/src/app/components/dashboard-admin/dashboard-admin.component.html', content);
+console.log('dashboard-admin done');

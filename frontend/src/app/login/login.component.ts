@@ -23,7 +23,9 @@ export class LoginComponent {
 
   login() {
     this.errorMessage = '';
-    this.http.post(`${this.apiUrl}/users/login`, { email: this.email, password: this.password }).subscribe({
+    const cleanEmail = this.email ? this.email.trim().toLowerCase() : '';
+    
+    this.http.post(`${this.apiUrl}/users/login`, { email: cleanEmail, password: this.password }).subscribe({
       next: (res: any) => {
         localStorage.setItem('user', JSON.stringify(res.user));
         if (res.user.role === 'Admin') {

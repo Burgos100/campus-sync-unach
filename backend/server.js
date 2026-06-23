@@ -37,7 +37,8 @@ app.post('/api/users/register', async (req, res) => {
 
 app.post('/api/users/login', async (req, res) => {
     try {
-        const { email, password } = req.body;
+        const email = req.body.email ? req.body.email.trim().toLowerCase() : '';
+        const password = req.body.password;
         const [rows] = await pool.query('SELECT * FROM users WHERE email = ?', [email]);
         if (rows.length > 0) {
             const user = rows[0];
@@ -233,7 +234,7 @@ app.get('/api/reportes/generar', async (req, res) => {
         }
 
         const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
         const result = await model.generateContent(prompt);
         const response = await result.response;
@@ -243,6 +244,29 @@ app.get('/api/reportes/generar', async (req, res) => {
     } catch (error) {
         console.error("Error generating report:", error);
         res.status(500).json({ message: 'Error generating report', error: error.message });
+    }
+});
+
+// Dashboard metrics
+app.get('/api/metrics', async (req, res) => {
+    try {
+        const [rows] = await db.pool.query('SELECT * FROM dashboard_metrics LIMIT 1');
+        
+        // Obtenemos conteos reales para complementar
+        const [userCount] = await db.pool.query("SELECT COUNT(*) as count FROM users");
+        const [activityCount] = await db.pool.query("SELECT COUNT(*) as count FROM activities");
+
+        if (rows.length > 0) {
+            const metrics = rows[0];
+            metrics.usuarios_reales = userCount[0].count;
+            metrics.actividades_reales = activityCount[0].count;
+            res.json(metrics);
+        } else {
+            res.status(404).json({ message: 'Metrics not found' });
+        }
+    } catch (error) {
+        console.error("Error fetching metrics:", error);
+        res.status(500).json({ message: 'Error fetching metrics', error: error.message });
     }
 });
 

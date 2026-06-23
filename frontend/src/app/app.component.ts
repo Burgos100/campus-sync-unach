@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, NavigationEnd, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { AuthService } from './services/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -12,7 +13,7 @@ import { CommonModule } from '@angular/common';
 export class AppComponent implements OnInit {
   user: any = null;
 
-  constructor(private router: Router) {
+  constructor(private router: Router, private authService: AuthService) {
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
         this.checkUser();
@@ -34,7 +35,7 @@ export class AppComponent implements OnInit {
   }
 
   logout() {
-    localStorage.removeItem('user');
+    this.authService.logout();
     this.user = null;
     this.router.navigate(['/login']);
   }

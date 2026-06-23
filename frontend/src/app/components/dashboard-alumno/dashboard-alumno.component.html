@@ -1,38 +1,115 @@
-<div class="p-8 max-w-7xl mx-auto min-h-screen bg-gray-50">
-  <div class="bg-white p-6 rounded-2xl shadow-sm mb-8 border border-gray-100 flex items-center justify-between">
-    <div>
-      <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight">Portal del Alumno</h2>
-      <p class="text-gray-500 mt-1 text-sm">Bienvenido, {{ user?.name }}</p>
+
+<!-- Welcome Header Card -->
+
+<div *ngIf="errorMessage" class="bg-error/10 text-error px-4 py-3 rounded-xl text-sm font-medium border border-error/20 flex items-center gap-2 mb-6">
+  <span class="material-symbols-outlined">error</span>
+  <span>{{ errorMessage }}</span>
+</div>
+<div *ngIf="successMessage" class="bg-tertiary/10 text-tertiary px-4 py-3 rounded-xl text-sm font-medium border border-tertiary/20 flex items-center gap-2 mb-6">
+  <span>{{ successMessage }}</span>
+</div>
+<section class="mb-10 animate-fade-in">
+<div class="bg-white rounded-xl shadow-sm border border-outline-variant p-8 primary-accent-bar bento-card-gradient">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+<div>
+<h1 class="text-display-lg font-display-lg text-on-background mb-1">Portal del Alumno</h1>
+<p class="text-body-lg text-secondary">Bienvenido de nuevo, <span class="font-semibold text-primary">{{ user?.name }}</span>. Tienes 3 actividades pendientes esta semana.</p>
+</div>
+<div class="flex gap-3">
+<div class="bg-secondary-container/30 px-4 py-3 rounded-xl border border-secondary-container">
+<p class="text-label-sm text-secondary uppercase tracking-wider">Promedio General</p>
+<p class="text-headline-md font-bold text-primary">6.8 / 7.0</p>
+</div>
+<div class="bg-tertiary-fixed/10 px-4 py-3 rounded-xl border border-tertiary-fixed/30">
+<p class="text-label-sm text-tertiary uppercase tracking-wider">Asistencia</p>
+<p class="text-headline-md font-bold text-tertiary">94%</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Activities Section -->
+<section>
+<div class="flex items-center gap-3 mb-6">
+<div class="bg-primary-container p-2 rounded-lg text-white">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">local_activity</span>
+</div>
+<h2 class="text-headline-xl font-headline-xl text-on-background">Actividades Disponibles</h2>
+</div>
+<!-- Bento Grid for Activities -->
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-gutter">
+  <div *ngFor="let act of activities" class="group bg-white rounded-xl shadow-sm border border-outline-variant overflow-hidden hover:shadow-lg transition-all duration-300 flex flex-col">
+    <div class="relative h-48 overflow-hidden">
+      <div class="w-full h-full bg-primary/10 group-hover:scale-105 transition-transform duration-500 flex items-center justify-center">
+        <span class="material-symbols-outlined text-6xl text-primary/30">event</span>
+      </div>
+      <div class="absolute top-4 left-4">
+        <span class="bg-primary/90 text-white text-label-sm px-3 py-1 rounded-full backdrop-blur-md">Actividad</span>
+      </div>
+    </div>
+    <div class="p-6 flex-grow flex flex-col">
+      <div class="flex justify-between items-start mb-3">
+        <h3 class="text-headline-md font-bold text-on-background">{{ act.title }}</h3>
+        <span class="bg-tertiary-fixed/20 text-tertiary text-[12px] font-bold px-2 py-0.5 rounded uppercase">Nuevo</span>
+      </div>
+      <p class="text-body-md text-on-surface-variant line-clamp-4 mb-6">{{ act.description }}</p>
+      <div class="mt-auto flex items-center justify-between border-t border-slate-100 pt-4">
+        <div class="flex items-center gap-2 text-secondary">
+          <span class="material-symbols-outlined text-[20px]">group</span>
+          <span class="text-label-sm">Cupos disp.</span>
+        </div>
+        <button (click)="enroll(act.id)" class="bg-primary text-white text-label-sm font-semibold px-6 py-2.5 rounded-lg hover:bg-primary-container active:scale-95 transition-all">
+          Inscribirse
+        </button>
+      </div>
     </div>
   </div>
-
-  <div *ngIf="errorMessage" class="bg-red-50 text-red-600 px-4 py-3 rounded-xl text-sm font-medium border border-red-100 flex items-center gap-2 mb-6">
-    <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-    <span>{{ errorMessage }}</span>
-  </div>
-
-  <div *ngIf="successMessage" class="bg-green-50 text-green-600 px-4 py-3 rounded-xl text-sm font-medium border border-green-100 flex items-center gap-2 mb-6">
-    <span>{{ successMessage }}</span>
-  </div>
-
-  <div class="mb-6 flex items-center gap-2">
-    <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-    <h3 class="text-2xl font-bold text-gray-900">Actividades Disponibles</h3>
-  </div>
-
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-    <div *ngFor="let act of activities" class="bg-white p-6 border border-gray-100 rounded-2xl shadow-sm hover:shadow-lg transition-all flex flex-col h-full group">
-      <h4 class="font-bold text-xl mb-3 text-gray-900 group-hover:text-indigo-600 transition-colors">{{ act.title }}</h4>
-      <p class="text-gray-500 text-sm mb-6 flex-grow leading-relaxed">{{ act.description }}</p>
-      <button (click)="enroll(act.id)" class="w-full bg-indigo-50 text-indigo-700 border border-indigo-100 px-4 py-3 rounded-xl font-bold hover:bg-indigo-600 hover:text-white transition-all shadow-sm focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 mt-auto">
-        Inscribirme
-      </button>
-    </div>
-    
-    <div *ngIf="activities.length === 0" class="col-span-full p-12 text-center flex flex-col items-center justify-center text-gray-500 bg-white rounded-2xl border border-gray-100 shadow-sm min-h-[300px]">
-      <svg class="w-16 h-16 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
-      <p class="text-lg font-medium">Aún no hay actividades publicadas</p>
-      <p class="text-sm mt-1">Vuelve más tarde para descubrir nuevos eventos de la universidad.</p>
-    </div>
+  
+  <div *ngIf="activities.length === 0" class="col-span-full p-12 text-center flex flex-col items-center justify-center text-secondary bg-white rounded-2xl border border-outline-variant shadow-sm min-h-[300px]">
+    <span class="material-symbols-outlined text-6xl text-outline-variant mb-4">event_busy</span>
+    <p class="text-lg font-medium">Aún no hay actividades publicadas</p>
+    <p class="text-sm mt-1">Vuelve más tarde para descubrir nuevos eventos.</p>
   </div>
 </div>
+</section>
+<!-- Stats Section (Administrative/Summary) -->
+<section class="mt-12">
+<div class="bg-white rounded-xl border border-outline-variant p-6 grid grid-cols-1 md:grid-cols-4 gap-6">
+<div class="flex items-center gap-4">
+<div class="p-3 bg-primary/10 rounded-full text-primary">
+<span class="material-symbols-outlined">history</span>
+</div>
+<div>
+<p class="text-label-sm text-secondary">Horas Realizadas</p>
+<p class="text-headline-md font-bold">42h</p>
+</div>
+</div>
+<div class="flex items-center gap-4 border-l-0 md:border-l border-outline-variant md:pl-6">
+<div class="p-3 bg-tertiary/10 rounded-full text-tertiary">
+<span class="material-symbols-outlined">check_circle</span>
+</div>
+<div>
+<p class="text-label-sm text-secondary">Certificados</p>
+<p class="text-headline-md font-bold">12</p>
+</div>
+</div>
+<div class="flex items-center gap-4 border-l-0 md:border-l border-outline-variant md:pl-6">
+<div class="p-3 bg-secondary-container text-on-secondary-container rounded-full">
+<span class="material-symbols-outlined">pending</span>
+</div>
+<div>
+<p class="text-label-sm text-secondary">Postulaciones</p>
+<p class="text-headline-md font-bold">2</p>
+</div>
+</div>
+<div class="flex items-center gap-4 border-l-0 md:border-l border-outline-variant md:pl-6">
+<div class="p-3 bg-error-container text-on-error-container rounded-full">
+<span class="material-symbols-outlined">warning</span>
+</div>
+<div>
+<p class="text-label-sm text-secondary">Faltas</p>
+<p class="text-headline-md font-bold">0</p>
+</div>
+</div>
+</div>
+</section>

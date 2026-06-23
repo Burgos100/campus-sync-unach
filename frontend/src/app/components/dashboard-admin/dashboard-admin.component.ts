@@ -15,6 +15,7 @@ export class DashboardAdminComponent implements OnInit {
   activities: any[] = [];
   participants: any[] = [];
   selectedActivity: any = null;
+  metrics: any = null;
 
   newActivityTitle = '';
   newActivityTopic = '';
@@ -39,6 +40,14 @@ export class DashboardAdminComponent implements OnInit {
       return;
     }
     this.loadActivities();
+    this.loadMetrics();
+  }
+
+  loadMetrics() {
+    this.http.get<any>(`${this.apiUrl}/metrics`).subscribe({
+      next: (data) => this.metrics = data,
+      error: (err) => console.error('Error al cargar métricas', err)
+    });
   }
 
   logout() {

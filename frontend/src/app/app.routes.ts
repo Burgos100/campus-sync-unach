@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { LoginComponent } from './login/login.component'; // Usando el login integrado con BD
+import { LoginComponent } from './components/login/login.component'; // Usando el login integrado con BD
 import { RegisterComponent } from './components/register/register.component';
 import { DashboardComponent } from './dashboard/dashboard.component'; // Usando el dashboard integrado con IA
 import { DashboardAlumnoComponent } from './components/dashboard-alumno/dashboard-alumno.component';
