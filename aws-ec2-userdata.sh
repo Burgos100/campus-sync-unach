@@ -26,7 +26,7 @@ chmod +x /usr/local/bin/docker-compose
 # git clone https://<TU_TOKEN>@github.com/tu-usuario/tu-repo.git campus-sync
 
 cd /home/ubuntu
-git clone https://github.com/Burgos100/campus-sync-unach.git
+git clone https://github.com/Burgos100/campus-sync-unach.git campus-sync
 cd campus-sync
 
 # 5. Configurar Variables de Entorno de forma segura (.env)
