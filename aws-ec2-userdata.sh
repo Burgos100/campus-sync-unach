@@ -3,9 +3,14 @@
 # Script de User Data para AWS EC2 (Basado en Ubuntu 20.04 / 22.04 / 24.04)
 # =========================================================================
 
-# 1. Actualizar el sistema
+# 1. Actualizar el sistema y crear SWAP (Para evitar Out Of Memory en t2.micro)
 apt-get update -y
 apt-get upgrade -y
+fallocate -l 2G /swapfile
+chmod 600 /swapfile
+mkswap /swapfile
+swapon /swapfile
+echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
 
 # 2. Instalar herramientas básicas y Docker
 apt-get install git curl unzip -y
