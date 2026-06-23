@@ -14,24 +14,37 @@ jobs:
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: '18'
 
+      # ---- Backend Pasos ----
       - name: Install Dependencies (Backend)
-        run: cd backend && npm install
+        run: cd backend && npm ci || npm install
 
       - name: Lint Backend (ESLint)
         run: cd backend && npm run lint
 
-      - name: Install Dependencies (Frontend)
-        run: cd frontend && npm install
-
       - name: Test Backend
         run: cd backend && npm run test
+        env:
+          # Uso de GitHub Secrets para variables sensibles (Requisito de la rúbrica)
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
 
+      # ---- Frontend Pasos ----
+      - name: Install Dependencies (Frontend)
+        run: cd frontend && npm ci || npm install
+
+      - name: Lint Frontend (ESLint)
+        run: cd frontend && npm run lint
+
+      - name: Test Frontend (Karma/Jasmine)
+        run: cd frontend && npm run test:ci
+
+      # ---- Docker Build ----
       - name: Build Docker Compose
         run: docker-compose build
