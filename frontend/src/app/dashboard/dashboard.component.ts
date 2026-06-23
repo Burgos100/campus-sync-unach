@@ -18,7 +18,7 @@ export class DashboardComponent implements OnInit {
   newActivityTopic = '';
   generatedDescription = '';
 
-  private apiUrl = 'http://localhost:3000/api';
+  private apiUrl = `http://${window.location.hostname}:3000/api`;
 
   constructor(private http: HttpClient, private router: Router) {}
 

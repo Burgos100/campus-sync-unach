@@ -14,7 +14,7 @@ export class DashboardAlumnoComponent implements OnInit {
   activities: any[] = [];
   myEnrollments: any[] = [];
 
-  private apiUrl = 'http://localhost:3000/api';
+  private apiUrl = `http://${window.location.hostname}:3000/api`;
 
   constructor(private http: HttpClient, private router: Router) {}
 

@@ -16,8 +16,8 @@ export class LoginComponent {
   password = '';
   name = ''; // for registration
 
-  // Utilizar proxy en desarrollo o API directa
-  private apiUrl = 'http://localhost:3000/api';
+  // Detecta automáticamente si está en localhost o en AWS
+  private apiUrl = `http://${window.location.hostname}:3000/api`;
 
   constructor(private http: HttpClient, private router: Router) {}
 
