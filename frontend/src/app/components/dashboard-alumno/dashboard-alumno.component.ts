@@ -14,6 +14,9 @@ export class DashboardAlumnoComponent implements OnInit {
   activities: any[] = [];
   myEnrollments: any[] = [];
 
+  errorMessage = '';
+  successMessage = '';
+
   private apiUrl = `http://${window.location.hostname}:3000/api`;
 
   constructor(private http: HttpClient, private router: Router) {}
@@ -45,11 +48,13 @@ export class DashboardAlumnoComponent implements OnInit {
   }
 
   enroll(activityId: number) {
+    this.errorMessage = '';
+    this.successMessage = '';
     this.http.post(`${this.apiUrl}/participantes`, { userId: this.user.id, activityId }).subscribe({
       next: () => {
-        alert('¡Inscrito exitosamente!');
+        this.successMessage = '¡Inscrito exitosamente!';
       },
-      error: (err) => alert(err.error?.message || 'Error al inscribirse')
+      error: (err) => this.errorMessage = err.error?.message || 'Error al inscribirse'
     });
   }
 }

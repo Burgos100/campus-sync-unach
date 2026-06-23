@@ -1,24 +1,51 @@
-<div style="display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f4f5f7;">
-  <div style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 350px;">
-    <h2 style="text-align: center; color: #333;">CampusSync UnACh</h2>
-    <p style="text-align: center; color: #666; margin-bottom: 1.5rem;">Gestión de Actividades</p>
+<div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-md w-full bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
+    <div class="p-10">
+      <div class="flex justify-center mb-6">
+        <div class="bg-indigo-100 p-3 rounded-2xl">
+          <svg class="w-10 h-10 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+        </div>
+      </div>
+      <div class="text-center mb-8">
+        <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight">
+          CampusSync UnACh
+        </h2>
+        <p class="text-gray-500 text-sm mt-2">Gestión de Actividades Universitarias</p>
+      </div>
 
-    <div style="margin-bottom: 1rem;">
-      <label style="display: block; margin-bottom: .5rem; color: #555;">Nombre (solo para registro)</label>
-      <input type="text" [(ngModel)]="name" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-    </div>
-    <div style="margin-bottom: 1rem;">
-      <label style="display: block; margin-bottom: .5rem; color: #555;">Correo Electrónico</label>
-      <input type="email" [(ngModel)]="email" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-    </div>
-    <div style="margin-bottom: 1.5rem;">
-      <label style="display: block; margin-bottom: .5rem; color: #555;">Contraseña</label>
-      <input type="password" [(ngModel)]="password" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-    </div>
-    
-    <div style="display: flex; gap: 10px;">
-      <button (click)="login()" style="flex: 1; padding: 10px; background: #0056b3; color: white; border: none; border-radius: 4px; cursor: pointer;">Ingresar</button>
-      <button (click)="register()" style="flex: 1; padding: 10px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;">Registrarse</button>
+      <div *ngIf="errorMessage" class="bg-red-50 text-red-600 px-4 py-3 rounded-xl text-sm font-medium border border-red-100 flex items-center gap-2 mb-6">
+        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        <span>{{ errorMessage }}</span>
+      </div>
+
+      <div class="space-y-5">
+        <div>
+          <label class="block text-gray-700 text-sm font-bold mb-2" for="email">
+            Correo Electrónico
+          </label>
+          <input class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors" 
+                 id="email" type="email" placeholder="correo@ejemplo.com" [(ngModel)]="email" name="email" (keyup.enter)="login()">
+        </div>
+
+        <div>
+          <label class="block text-gray-700 text-sm font-bold mb-2" for="password">
+            Contraseña
+          </label>
+          <input class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors" 
+                 id="password" type="password" placeholder="••••••••" [(ngModel)]="password" name="password" (keyup.enter)="login()">
+        </div>
+
+        <div class="pt-4 flex flex-col gap-4">
+          <button (click)="login()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-xl transition-all shadow-md hover:shadow-lg focus:ring-4 focus:ring-indigo-200">
+            Ingresar
+          </button>
+          
+          <div class="text-center mt-4">
+            <span class="text-sm text-gray-600">¿No tienes cuenta? </span>
+            <a routerLink="/register" class="text-sm font-bold text-indigo-600 hover:text-indigo-800">Regístrate aquí</a>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>

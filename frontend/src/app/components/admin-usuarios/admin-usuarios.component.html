@@ -1,12 +1,45 @@
-<div class="p-6 max-w-6xl mx-auto">
-  <div class="border-b pb-4 mb-6">
-    <h2 class="text-2xl font-bold text-gray-800">Gestión de Usuarios</h2>
-    <p class="text-gray-600">Administra los roles y accesos de los estudiantes y administradores.</p>
+<div class="p-8 max-w-7xl mx-auto min-h-screen bg-gray-50">
+  <div class="bg-white p-6 rounded-2xl shadow-sm mb-8 border border-gray-100 flex items-center justify-between">
+    <div>
+      <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight">Gestión de Usuarios</h2>
+      <p class="text-gray-500 mt-2 text-sm">Administra los roles y accesos de los estudiantes y administradores.</p>
+    </div>
   </div>
-  
-  <div class="bg-white rounded-lg shadow-sm border p-8 text-center">
-    <div class="text-6xl mb-4">👥</div>
-    <h3 class="text-xl font-semibold text-gray-700">Módulo en construcción</h3>
-    <p class="text-gray-500 mt-2">Aquí podrás ver la lista completa de usuarios, cambiar contraseñas y asignar roles.</p>
+
+  <div *ngIf="loading" class="text-center py-12">
+    <p class="text-gray-500">Cargando usuarios...</p>
+  </div>
+
+  <div *ngIf="!loading && error" class="bg-red-50 text-red-600 p-4 rounded-xl mb-6">
+    {{ error }}
+  </div>
+
+  <div *ngIf="!loading && !error" class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-sm text-gray-500">
+        <thead class="bg-gray-50 text-xs text-gray-700 uppercase border-b border-gray-100">
+          <tr>
+            <th scope="col" class="px-6 py-4 font-medium">Nombre</th>
+            <th scope="col" class="px-6 py-4 font-medium">Email</th>
+            <th scope="col" class="px-6 py-4 font-medium">Rol</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+          <tr *ngFor="let user of usuarios" class="hover:bg-gray-50 transition-colors">
+            <td class="px-6 py-4 font-medium text-gray-900">{{ user.name }}</td>
+            <td class="px-6 py-4">{{ user.email }}</td>
+            <td class="px-6 py-4">
+              <span class="px-3 py-1 text-xs font-semibold rounded-full" 
+                    [ngClass]="{'bg-purple-100 text-purple-700': user.role === 'Admin', 'bg-blue-100 text-blue-700': user.role !== 'Admin'}">
+                {{ user.role }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div *ngIf="usuarios.length === 0" class="p-8 text-center text-gray-500">
+        No hay usuarios registrados.
+      </div>
+    </div>
   </div>
 </div>

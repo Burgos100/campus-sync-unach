@@ -1,37 +1,73 @@
-<div class="p-6 max-w-6xl mx-auto">
-  <div class="flex justify-between items-center border-b pb-4 mb-6">
-    <h2 class="text-2xl font-bold">Panel de Administración - {{ user?.name }}</h2>
+<div class="p-8 max-w-7xl mx-auto min-h-screen bg-gray-50">
+  <div class="bg-white p-6 rounded-2xl shadow-sm mb-8 border border-gray-100 flex items-center justify-between">
+    <div>
+      <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight">Panel de Administración</h2>
+      <p class="text-gray-500 mt-1 text-sm">Bienvenido, {{ user?.name }}</p>
+    </div>
   </div>
 
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+  <div *ngIf="errorMessage" class="bg-red-50 text-red-600 px-4 py-3 rounded-xl text-sm font-medium border border-red-100 flex items-center gap-2 mb-6">
+    <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+    <span>{{ errorMessage }}</span>
+  </div>
+
+  <div *ngIf="successMessage" class="bg-green-50 text-green-600 px-4 py-3 rounded-xl text-sm font-medium border border-green-100 flex items-center gap-2 mb-6">
+    <span>{{ successMessage }}</span>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
     <!-- Crear Actividad -->
-    <div class="bg-gray-50 p-6 rounded-lg shadow-sm border">
-      <h3 class="text-xl font-semibold mb-4">Crear Actividad con IA ✨</h3>
-      <div class="mb-4">
-        <label class="block mb-2 font-medium">Título:</label>
-        <input type="text" [(ngModel)]="newActivityTitle" class="w-full p-2 border rounded">
+    <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 flex flex-col h-full">
+      <h3 class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+        <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+        Crear Actividad con IA
+      </h3>
+      <div class="space-y-5 flex-grow">
+        <div>
+          <label class="block mb-2 text-sm font-semibold text-gray-700">Título de la actividad</label>
+          <input type="text" [(ngModel)]="newActivityTitle" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors" placeholder="Ej: Taller de Docker">
+        </div>
+        <div>
+          <label class="block mb-2 text-sm font-semibold text-gray-700">Tema para generar descripción</label>
+          <div class="flex flex-col sm:flex-row gap-3">
+            <input type="text" [(ngModel)]="newActivityTopic" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors" placeholder="Ej: Introducción a contenedores">
+            <button (click)="generateDescription()" class="sm:w-auto w-full whitespace-nowrap bg-indigo-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-indigo-700 transition-colors shadow-sm focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1">
+              Generar
+            </button>
+          </div>
+        </div>
+        <div *ngIf="generatedDescription" class="p-5 bg-indigo-50 rounded-xl border border-indigo-100 relative">
+          <span class="absolute -top-3 left-4 bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded-full font-semibold border border-indigo-200">Vista Previa IA</span>
+          <p class="text-sm text-indigo-900 mt-2 leading-relaxed">{{ generatedDescription }}</p>
+        </div>
       </div>
-      <div class="mb-4">
-        <label class="block mb-2 font-medium">Tema para IA:</label>
-        <input type="text" [(ngModel)]="newActivityTopic" class="w-full p-2 border rounded mb-2">
-        <button (click)="generateDescription()" class="w-full bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">Generar Descripción</button>
+      <div class="pt-6 mt-6 border-t border-gray-100">
+        <button (click)="createActivity()" [disabled]="!generatedDescription || !newActivityTitle" class="w-full bg-emerald-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm focus:ring-2 focus:ring-emerald-500 focus:ring-offset-1">
+          Guardar Actividad
+        </button>
       </div>
-      <div *ngIf="generatedDescription" class="mb-4 p-4 bg-purple-50 rounded border border-purple-100">
-        <p class="text-sm text-purple-900">{{ generatedDescription }}</p>
-      </div>
-      <button (click)="createActivity()" [disabled]="!generatedDescription" class="w-full bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 disabled:opacity-50">Guardar Actividad</button>
     </div>
 
     <!-- Gestión -->
-    <div>
-      <h3 class="text-xl font-semibold mb-4">Gestión de Actividades</h3>
-      <div class="space-y-4">
-        <div *ngFor="let act of activities" class="p-4 border rounded shadow-sm bg-white">
-          <h4 class="font-bold text-lg text-blue-800">{{ act.title }}</h4>
-          <p class="text-gray-600 text-sm mb-3">{{ act.description }}</p>
-          <div class="flex gap-2">
-            <button (click)="viewParticipants(act)" class="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700">Participantes</button>
-            <button (click)="deleteActivity(act.id)" class="bg-red-100 text-red-600 px-3 py-1 rounded text-sm hover:bg-red-200">Eliminar</button>
+    <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 flex flex-col h-full">
+      <h3 class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path></svg>
+        Gestión de Actividades
+      </h3>
+      <div class="space-y-4 overflow-y-auto pr-2 custom-scrollbar flex-grow max-h-[500px]">
+        <div *ngIf="activities.length === 0" class="text-center py-10 text-gray-400">
+          No hay actividades creadas.
+        </div>
+        <div *ngFor="let act of activities" class="p-5 border border-gray-100 rounded-xl bg-gray-50 hover:bg-white hover:shadow-md transition-all group">
+          <h4 class="font-bold text-lg text-gray-900">{{ act.title }}</h4>
+          <p class="text-gray-500 text-sm mt-2 mb-4 line-clamp-2 leading-relaxed">{{ act.description }}</p>
+          <div class="flex gap-3 mt-auto">
+            <button (click)="viewParticipants(act)" class="flex-1 bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 hover:text-blue-600 hover:border-blue-300 transition-colors">
+              Participantes
+            </button>
+            <button (click)="deleteActivity(act.id)" class="px-4 py-2 bg-white border border-red-100 text-red-500 rounded-lg text-sm font-medium hover:bg-red-50 hover:border-red-200 transition-colors">
+              Eliminar
+            </button>
           </div>
         </div>
       </div>
@@ -39,38 +75,55 @@
   </div>
 
   <!-- Modal Participantes -->
-  <div *ngIf="selectedActivity" class="mt-8 p-6 bg-white border rounded-lg shadow-md">
-    <div class="flex justify-between items-center mb-4">
-      <h3 class="text-xl font-bold">Participantes: {{ selectedActivity.title }}</h3>
-      <button (click)="selectedActivity = null" class="text-gray-500 hover:text-gray-800">Cerrar</button>
+  <div *ngIf="selectedActivity" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden">
+      <div class="flex justify-between items-center p-6 border-b border-gray-100 bg-gray-50">
+        <div>
+          <h3 class="text-xl font-bold text-gray-900">{{ selectedActivity.title }}</h3>
+          <p class="text-sm text-gray-500 mt-1">Lista de participantes inscritos</p>
+        </div>
+        <button (click)="selectedActivity = null" class="text-gray-400 hover:text-gray-600 bg-gray-200 hover:bg-gray-300 rounded-full p-2 transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+      
+      <div class="overflow-y-auto flex-grow p-0">
+        <table class="w-full text-left border-collapse min-w-full">
+          <thead class="sticky top-0 bg-white border-b border-gray-200 shadow-sm">
+            <tr>
+              <th class="py-4 px-6 font-semibold text-gray-600 text-sm uppercase tracking-wider">Nombre</th>
+              <th class="py-4 px-6 font-semibold text-gray-600 text-sm uppercase tracking-wider">Correo</th>
+              <th class="py-4 px-6 font-semibold text-gray-600 text-sm uppercase tracking-wider">Estado</th>
+              <th class="py-4 px-6 font-semibold text-gray-600 text-sm uppercase tracking-wider text-right">Acción</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100">
+            <tr *ngFor="let p of participants" class="hover:bg-gray-50 transition-colors">
+              <td class="py-4 px-6 text-gray-900 font-medium">{{ p.name }}</td>
+              <td class="py-4 px-6 text-gray-500 text-sm">{{ p.email }}</td>
+              <td class="py-4 px-6">
+                <span class="px-3 py-1 rounded-full text-xs font-bold" [class]="p.attended ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'">
+                  {{ p.attended ? 'Presente' : 'Ausente' }}
+                </span>
+              </td>
+              <td class="py-4 px-6 text-right">
+                <button (click)="toggleAttendance(p.enrollment_id, p.attended)" class="bg-white border border-gray-200 shadow-sm px-4 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-indigo-600 transition-colors">
+                  Marcar {{ p.attended ? 'Ausente' : 'Presente' }}
+                </button>
+              </td>
+            </tr>
+            <tr *ngIf="participants.length === 0">
+              <td colspan="4" class="py-12 px-6 text-center text-gray-400">
+                <svg class="w-12 h-12 mx-auto text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                No hay participantes inscritos aún.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="p-6 bg-gray-50 border-t border-gray-100 text-right rounded-b-2xl">
+        <button (click)="selectedActivity = null" class="bg-white border border-gray-300 text-gray-700 px-6 py-2 rounded-xl text-sm font-bold hover:bg-gray-100 transition-colors">Cerrar</button>
+      </div>
     </div>
-    
-    <table class="w-full text-left border-collapse">
-      <thead>
-        <tr class="bg-gray-100">
-          <th class="p-3 border-b">Nombre</th>
-          <th class="p-3 border-b">Correo</th>
-          <th class="p-3 border-b">Asistencia</th>
-          <th class="p-3 border-b">Acción</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let p of participants">
-          <td class="p-3 border-b">{{ p.name }}</td>
-          <td class="p-3 border-b">{{ p.email }}</td>
-          <td class="p-3 border-b">
-            <span [class]="p.attended ? 'text-green-600 font-bold' : 'text-red-500'">{{ p.attended ? 'Presente' : 'Ausente' }}</span>
-          </td>
-          <td class="p-3 border-b">
-            <button (click)="toggleAttendance(p.enrollment_id, p.attended)" class="bg-gray-200 px-3 py-1 rounded text-sm hover:bg-gray-300">
-              Marcar {{ p.attended ? 'Ausente' : 'Presente' }}
-            </button>
-          </td>
-        </tr>
-        <tr *ngIf="participants.length === 0">
-          <td colspan="4" class="p-4 text-center text-gray-500">No hay participantes inscritos.</td>
-        </tr>
-      </tbody>
-    </table>
   </div>
 </div>

@@ -1,48 +1,57 @@
-<div style="padding: 2rem; max-width: 900px; margin: 0 auto; font-family: sans-serif;">
-  <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; padding-bottom: 1rem; margin-bottom: 2rem;">
-    <h2>Dashboard - Bienvenido, {{ user?.name }} ({{ user?.role }})</h2>
-    <button (click)="logout()" style="padding: 8px 16px; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;">Cerrar Sesión</button>
+<div class="p-8 max-w-7xl mx-auto min-h-screen bg-gray-50 font-sans">
+  <div class="bg-white p-6 rounded-2xl shadow-sm mb-8 border border-gray-100 flex items-center justify-between">
+    <div>
+      <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight">Dashboard</h2>
+      <p class="text-gray-500 mt-1 text-sm">Bienvenido, {{ user?.name }} ({{ user?.role }})</p>
+    </div>
+    <button (click)="logout()" class="px-6 py-2 bg-red-50 text-red-600 font-bold rounded-xl border border-red-100 hover:bg-red-600 hover:text-white transition-colors">Cerrar Sesión</button>
   </div>
 
-  <div style="display: flex; gap: 2rem;">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
     
     <!-- Crear Actividad (Módulo IA) -->
-    <div style="flex: 1; background: #f8f9fa; padding: 1.5rem; border-radius: 8px;">
-      <h3>Crear Actividad con IA ✨</h3>
-      <div style="margin-bottom: 1rem;">
-        <label style="display: block; margin-bottom: .5rem;">Título de la actividad:</label>
-        <input type="text" [(ngModel)]="newActivityTitle" style="width: 100%; padding: 8px; box-sizing: border-box;">
+    <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 flex flex-col h-full">
+      <h3 class="text-2xl font-bold text-gray-900 mb-6">Crear Actividad con IA</h3>
+      <div class="space-y-5 flex-grow">
+        <div>
+          <label class="block mb-2 text-sm font-semibold text-gray-700">Título de la actividad:</label>
+          <input type="text" [(ngModel)]="newActivityTitle" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors">
+        </div>
+        <div>
+          <label class="block mb-2 text-sm font-semibold text-gray-700">Tema para generar descripción:</label>
+          <input type="text" [(ngModel)]="newActivityTopic" placeholder="Ej. Taller de Node.js Avanzado" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors">
+          <button (click)="generateDescription()" class="mt-4 w-full bg-indigo-600 text-white font-bold py-3 rounded-xl hover:bg-indigo-700 transition-colors">
+            Generar Descripción con IA
+          </button>
+        </div>
+
+        <div *ngIf="generatedDescription" class="p-5 bg-indigo-50 rounded-xl border border-indigo-100">
+          <strong class="block text-sm text-indigo-800 mb-1">Descripción generada:</strong>
+          <p class="text-sm text-indigo-900">{{ generatedDescription }}</p>
+        </div>
       </div>
-      <div style="margin-bottom: 1rem;">
-        <label style="display: block; margin-bottom: .5rem;">Tema para que la IA genere la descripción:</label>
-        <input type="text" [(ngModel)]="newActivityTopic" placeholder="Ej. Taller de Node.js Avanzado" style="width: 100%; padding: 8px; box-sizing: border-box;">
-        <button (click)="generateDescription()" style="margin-top: 10px; width: 100%; padding: 8px; background: #6f42c1; color: white; border: none; border-radius: 4px; cursor: pointer;">
-          Generar Descripción con IA
+
+      <div class="pt-6 mt-6 border-t border-gray-100">
+        <button (click)="createActivity()" [disabled]="!generatedDescription" class="w-full bg-emerald-600 text-white font-bold py-3 rounded-xl hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+          Guardar Actividad
         </button>
       </div>
-
-      <div *ngIf="generatedDescription" style="margin-bottom: 1rem; padding: 1rem; background: #e9ecef; border-radius: 4px;">
-        <strong>Descripción generada:</strong>
-        <p>{{ generatedDescription }}</p>
-      </div>
-
-      <button (click)="createActivity()" [disabled]="!generatedDescription" style="width: 100%; padding: 10px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;" [style.opacity]="!generatedDescription ? '0.5' : '1'">
-        Guardar Actividad
-      </button>
     </div>
 
     <!-- Lista de Actividades -->
-    <div style="flex: 1;">
-      <h3>Actividades Disponibles</h3>
-      <div *ngIf="activities.length === 0" style="color: #666;">
-        No hay actividades creadas.
-      </div>
-      <div *ngFor="let activity of activities" style="border: 1px solid #ddd; padding: 1rem; margin-bottom: 1rem; border-radius: 4px;">
-        <h4 style="margin-top: 0; margin-bottom: .5rem; color: #0056b3;">{{ activity.title }}</h4>
-        <p style="color: #444; font-size: 0.95rem;">{{ activity.description }}</p>
-        <button (click)="enroll(activity.id)" style="padding: 6px 12px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
-          Inscribirme
-        </button>
+    <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 flex flex-col h-full">
+      <h3 class="text-2xl font-bold text-gray-900 mb-6">Actividades Disponibles</h3>
+      <div class="space-y-4 overflow-y-auto flex-grow max-h-[500px]">
+        <div *ngIf="activities.length === 0" class="text-center py-10 text-gray-400">
+          No hay actividades creadas.
+        </div>
+        <div *ngFor="let activity of activities" class="p-5 border border-gray-100 rounded-xl bg-gray-50 hover:bg-white hover:shadow-md transition-all">
+          <h4 class="font-bold text-lg text-gray-900">{{ activity.title }}</h4>
+          <p class="text-gray-500 text-sm mt-2 mb-4 leading-relaxed">{{ activity.description }}</p>
+          <button (click)="enroll(activity.id)" class="px-4 py-2 bg-indigo-50 text-indigo-700 font-bold rounded-lg border border-indigo-100 hover:bg-indigo-600 hover:text-white transition-colors">
+            Inscribirme
+          </button>
+        </div>
       </div>
     </div>
 

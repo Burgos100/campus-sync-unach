@@ -5,16 +5,18 @@ import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
-  selector: 'app-login',
+  selector: 'app-register',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule],
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss']
+  templateUrl: './register.component.html',
+  styleUrls: ['./register.component.scss']
 })
-export class LoginComponent {
+export class RegisterComponent {
   formData = {
+    name: '',
     email: '',
-    password: ''
+    password: '',
+    role: 'Alumno'
   };
   errorMessage = '';
   successMessage = '';
@@ -24,14 +26,14 @@ export class LoginComponent {
   onSubmit() {
     this.errorMessage = '';
     this.successMessage = '';
-    this.authService.login({ email: this.formData.email, password: this.formData.password }).subscribe({
+    this.authService.register(this.formData).subscribe({
       next: (res) => {
-        this.successMessage = 'Ingreso exitoso';
+        this.successMessage = 'Registro exitoso';
         this.authService.setCurrentUser(res.user);
         this.redirectBasedOnRole(res.user.role);
       },
       error: (err) => {
-        this.errorMessage = err.error.message || 'Error al iniciar sesión';
+        this.errorMessage = err.error.message || 'Error al registrarse';
       }
     });
   }

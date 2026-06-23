@@ -1,31 +1,38 @@
-<div class="min-h-screen flex flex-col">
+<div class="min-h-screen flex flex-col bg-gray-50 font-sans">
   <!-- Navbar -->
-  <header class="bg-blue-600 shadow-md text-white">
+  <header class="bg-indigo-700 shadow-md text-white sticky top-0 z-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between h-16 items-center">
-        <div class="flex-shrink-0 flex items-center">
-          <h1 class="text-2xl font-bold tracking-tight">CampusSync <span class="font-light">UnACh</span></h1>
+        <div class="flex-shrink-0 flex items-center gap-2">
+          <svg class="w-8 h-8 text-indigo-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+          <h1 class="text-2xl font-extrabold tracking-tight">CampusSync <span class="font-light text-indigo-200">UnACh</span></h1>
         </div>
-        <nav class="flex space-x-4 items-center">
+        <nav class="flex space-x-1 sm:space-x-4 items-center">
           <!-- NO LOGEADO -->
           <ng-container *ngIf="!user">
-            <a routerLink="/login" class="hover:bg-blue-700 px-3 py-2 rounded-md text-sm font-medium transition-colors">Inicio</a>
-            <a routerLink="/login" class="bg-blue-700 px-3 py-2 rounded-md text-sm font-medium shadow-sm">Ingresar</a>
+            <a routerLink="/login" class="hover:bg-indigo-600 px-3 py-2 rounded-lg text-sm font-medium transition-all">Inicio</a>
+            <a routerLink="/login" class="bg-white text-indigo-700 hover:bg-indigo-50 px-4 py-2 rounded-lg text-sm font-bold shadow-sm transition-all ml-2">Ingresar</a>
           </ng-container>
 
           <!-- ADMIN -->
           <ng-container *ngIf="user?.role === 'Admin'">
-            <a routerLink="/admin" routerLinkActive="bg-blue-800" [routerLinkActiveOptions]="{exact: true}" class="hover:bg-blue-700 px-3 py-2 rounded-md text-sm font-medium transition-colors">Actividades</a>
-            <a routerLink="/admin/usuarios" routerLinkActive="bg-blue-800" class="hover:bg-blue-700 px-3 py-2 rounded-md text-sm font-medium transition-colors">Usuarios</a>
-            <a routerLink="/admin/reportes" routerLinkActive="bg-blue-800" class="hover:bg-blue-700 px-3 py-2 rounded-md text-sm font-medium transition-colors">Reportes IA</a>
-            <button (click)="logout()" class="ml-4 bg-red-600 hover:bg-red-700 px-3 py-2 rounded-md text-sm font-medium shadow-sm transition-colors">Cerrar Sesión</button>
+            <a routerLink="/admin" routerLinkActive="bg-indigo-800 shadow-inner" [routerLinkActiveOptions]="{exact: true}" class="hover:bg-indigo-600 px-3 py-2 rounded-lg text-sm font-medium transition-all">Actividades</a>
+            <a routerLink="/admin/usuarios" routerLinkActive="bg-indigo-800 shadow-inner" class="hover:bg-indigo-600 px-3 py-2 rounded-lg text-sm font-medium transition-all">Usuarios</a>
+            <a routerLink="/admin/reportes" routerLinkActive="bg-indigo-800 shadow-inner" class="hover:bg-indigo-600 px-3 py-2 rounded-lg text-sm font-medium transition-all">Reportes IA</a>
+            <button (click)="logout()" class="ml-4 bg-indigo-800 border border-indigo-500 hover:bg-red-600 hover:border-red-600 px-4 py-2 rounded-lg text-sm font-medium shadow-sm transition-all flex items-center gap-2">
+              <span>Cerrar Sesión</span>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+            </button>
           </ng-container>
 
           <!-- ALUMNO -->
           <ng-container *ngIf="user?.role === 'Alumno'">
-            <a routerLink="/alumno" routerLinkActive="bg-blue-800" [routerLinkActiveOptions]="{exact: true}" class="hover:bg-blue-700 px-3 py-2 rounded-md text-sm font-medium transition-colors">Explorar Actividades</a>
-            <a routerLink="/alumno/mis-inscripciones" routerLinkActive="bg-blue-800" class="hover:bg-blue-700 px-3 py-2 rounded-md text-sm font-medium transition-colors">Mis Inscripciones</a>
-            <button (click)="logout()" class="ml-4 bg-red-600 hover:bg-red-700 px-3 py-2 rounded-md text-sm font-medium shadow-sm transition-colors">Cerrar Sesión</button>
+            <a routerLink="/alumno" routerLinkActive="bg-indigo-800 shadow-inner" [routerLinkActiveOptions]="{exact: true}" class="hover:bg-indigo-600 px-3 py-2 rounded-lg text-sm font-medium transition-all">Explorar</a>
+            <a routerLink="/alumno/mis-inscripciones" routerLinkActive="bg-indigo-800 shadow-inner" class="hover:bg-indigo-600 px-3 py-2 rounded-lg text-sm font-medium transition-all">Mis Inscripciones</a>
+            <button (click)="logout()" class="ml-4 bg-indigo-800 border border-indigo-500 hover:bg-red-600 hover:border-red-600 px-4 py-2 rounded-lg text-sm font-medium shadow-sm transition-all flex items-center gap-2">
+              <span>Cerrar Sesión</span>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+            </button>
           </ng-container>
         </nav>
       </div>
@@ -33,12 +40,18 @@
   </header>
   
   <!-- Contenido Principal -->
-  <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+  <main class="flex-grow w-full">
     <router-outlet></router-outlet>
   </main>
 
   <!-- Footer -->
-  <footer class="bg-white border-t py-4 text-center text-sm text-gray-500">
-    <p>&copy; 2026 CampusSync UnACh. Proyecto DevOps.</p>
+  <footer class="bg-white border-t border-gray-200 py-6 text-center text-sm text-gray-500 mt-auto">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+      <p>&copy; 2026 CampusSync UnACh. Todos los derechos reservados.</p>
+      <div class="flex items-center gap-2 text-indigo-600 font-medium bg-indigo-50 px-3 py-1 rounded-full">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+        Proyecto DevOps
+      </div>
+    </div>
   </footer>
 </div>

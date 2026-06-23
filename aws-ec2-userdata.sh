@@ -41,7 +41,7 @@ DB_NAME=campussync
 DB_USER=admin
 DB_PASSWORD=admin_password_seguro
 PORT=3000
-GEMINI_API_KEY=AQ.Ab8RN6LOU31Cem5WYvEpw46eOB0IbbyWn1u8rWfoNwcsnNqnaQ
+GEMINI_API_KEY=TU_API_KEY_AQUI
 EOT
 
 # Ajustar permisos para el usuario ubuntu
