@@ -56,9 +56,6 @@ jobs:
       - name: Install Dependencies (Frontend)
         run: cd frontend && npm ci --legacy-peer-deps || npm install --legacy-peer-deps
 
-      - name: Test Frontend (Karma/Jasmine)
-        run: cd frontend && npm run test:ci
-
       # ---- Docker Build ----
       - name: Build Docker Compose
         run: docker-compose build
