@@ -3,6 +3,22 @@ process.env.NODE_ENV = "test";
 
 const request = require("supertest");
 
+jest.mock("@google/generative-ai", () => {
+  return {
+    GoogleGenerativeAI: jest.fn().mockImplementation(() => {
+      return {
+        getGenerativeModel: jest.fn().mockReturnValue({
+          generateContent: jest.fn().mockResolvedValue({
+            response: {
+              text: () => "Mocked AI description for Docker",
+            },
+          }),
+        }),
+      };
+    }),
+  };
+});
+
 jest.mock("./db", () => ({
   pool: {
     query: jest.fn((query) => {
