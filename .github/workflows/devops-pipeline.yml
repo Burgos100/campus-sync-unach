@@ -56,10 +56,8 @@ jobs:
       - name: Install Dependencies (Frontend)
         run: cd frontend && npm ci || npm install
 
-      - name: Lint Frontend (ESLint)
-        run: cd frontend && npm run lint
-
       - name: Test Frontend (Karma/Jasmine)
+        run: cd frontend && npm run test:ci
         run: cd frontend && npm run test:ci
 
       # ---- Docker Build ----

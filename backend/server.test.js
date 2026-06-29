@@ -3,28 +3,28 @@ process.env.NODE_ENV = "test";
 
 const request = require("supertest");
 
-jest.mock('./db', () => ({
+jest.mock("./db", () => ({
   pool: {
     query: jest.fn((query) => {
-        if (query.includes("INSERT INTO users")) {
-          return Promise.resolve([[{ insertId: 1 }]]);
-        }
-        if (query.includes("SELECT * FROM users")) {
-          return Promise.resolve([
-            [
-              {
-                id: 1,
-                name: "Test",
-                email: "test@example.com",
-                role: "Alumno",
-              },
-            ],
-          ]);
-        }
-        return Promise.resolve([[]]);
-      })
+      if (query.includes("INSERT INTO users")) {
+        return Promise.resolve([[{ insertId: 1 }]]);
+      }
+      if (query.includes("SELECT * FROM users")) {
+        return Promise.resolve([
+          [
+            {
+              id: 1,
+              name: "Test",
+              email: "test@example.com",
+              role: "Alumno",
+            },
+          ],
+        ]);
+      }
+      return Promise.resolve([[]]);
+    }),
   },
-  initDB: jest.fn()
+  initDB: jest.fn(),
 }));
 
 const app = require("./server");

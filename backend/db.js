@@ -1,16 +1,19 @@
-const mysql = require('mysql2/promise');
-const dotenv = require('dotenv');
+const mysql = require("mysql2/promise");
+const dotenv = require("dotenv");
 
-dotenv.config({ path: '../.env' });
+dotenv.config({ path: "../.env" });
 
 const pool = mysql.createPool({
-  host: process.env.DB_HOST || 'localhost',
-  user: process.env.DB_USER || 'admin',
-  password: process.env.DB_PASSWORD !== undefined ? process.env.DB_PASSWORD : 'admin123',
-  database: process.env.DB_NAME || 'campussync',
+  host: process.env.DB_HOST || "localhost",
+  user: process.env.DB_USER || "admin",
+  password:
+    process.env.DB_PASSWORD !== undefined
+      ? process.env.DB_PASSWORD
+      : "admin123",
+  database: process.env.DB_NAME || "campussync",
   waitForConnections: true,
   connectionLimit: 10,
-  queueLimit: 0
+  queueLimit: 0,
 });
 
 const initDB = async () => {
@@ -18,7 +21,7 @@ const initDB = async () => {
   while (retries > 0) {
     try {
       const connection = await pool.getConnection();
-      
+
       // Create Users table
       await connection.query(`
         CREATE TABLE IF NOT EXISTS users (
@@ -70,7 +73,9 @@ const initDB = async () => {
       `);
 
       // Insert default metrics if empty
-      const [rows] = await connection.query('SELECT COUNT(*) as count FROM dashboard_metrics');
+      const [rows] = await connection.query(
+        "SELECT COUNT(*) as count FROM dashboard_metrics",
+      );
       if (rows[0].count === 0) {
         await connection.query(`
           INSERT INTO dashboard_metrics 
@@ -80,18 +85,21 @@ const initDB = async () => {
       }
 
       connection.release();
-      console.log('Database initialized successfully.');
+      console.log("Database initialized successfully.");
       break; // Salimos del bucle si fue exitoso
     } catch (error) {
-      console.error(`Error initializing database. Retries left: ${retries - 1}`, error.message);
+      console.error(
+        `Error initializing database. Retries left: ${retries - 1}`,
+        error.message,
+      );
       retries -= 1;
       // Esperar 5 segundos antes de reintentar
-      await new Promise(res => setTimeout(res, 5000));
+      await new Promise((res) => setTimeout(res, 5000));
     }
   }
 };
 
 module.exports = {
   pool,
-  initDB
+  initDB,
 };

@@ -17,6 +17,8 @@ module.exports = [
         expect: "readonly",
         beforeAll: "readonly",
         afterAll: "readonly",
+        setTimeout: "readonly",
+        clearTimeout: "readonly",
       },
     },
     rules: {

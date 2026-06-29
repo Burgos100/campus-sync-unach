@@ -1,11 +1,11 @@
-const express = require('express');
-const cors = require('cors');
-const dotenv = require('dotenv');
-const bcrypt = require('bcryptjs');
-const { pool, initDB } = require('./db');
+const express = require("express");
+const cors = require("cors");
+const dotenv = require("dotenv");
+const bcrypt = require("bcryptjs");
+const { pool, initDB } = require("./db");
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
-dotenv.config({ path: '../.env' });
+dotenv.config({ path: "../.env" });
 
 const app = express();
 app.use(cors());
@@ -13,101 +13,123 @@ app.use(express.json());
 
 // Initialize Database
 if (process.env.NODE_ENV !== "test") {
-    initDB();
+  initDB();
 }
 
 // API Endpoints
-app.post('/api/users/register', async (req, res) => {
-    try {
-        const { name, email, password, role } = req.body;
-        const userRole = role || 'Alumno';
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const [result] = await pool.query(
-            'INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)',
-            [name, email, hashedPassword, userRole]
-        );
-        res.status(201).json({ message: 'User registered', user: { id: result.insertId, name, email, role: userRole } });
-    } catch (error) {
-        if (error.code === 'ER_DUP_ENTRY') {
-            return res.status(400).json({ message: 'Email already exists' });
+app.post("/api/users/register", async (req, res) => {
+  try {
+    const { name, email, password, role } = req.body;
+    const userRole = role || "Alumno";
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const [result] = await pool.query(
+      "INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)",
+      [name, email, hashedPassword, userRole],
+    );
+    res.status(201).json({
+      message: "User registered",
+      user: { id: result.insertId, name, email, role: userRole },
+    });
+  } catch (error) {
+    if (error.code === "ER_DUP_ENTRY") {
+      return res.status(400).json({ message: "Email already exists" });
+    }
+    res
+      .status(500)
+      .json({ message: "Error registering user", error: error.message });
+  }
+});
+
+app.post("/api/users/login", async (req, res) => {
+  try {
+    const email = req.body.email ? req.body.email.trim().toLowerCase() : "";
+    const password = req.body.password;
+    const [rows] = await pool.query("SELECT * FROM users WHERE email = ?", [
+      email,
+    ]);
+    if (rows.length > 0) {
+      const user = rows[0];
+
+      // Check if it is a bcrypt hash (starts with $2a$, $2b$, etc.)
+      let isMatch = false;
+      if (user.password.startsWith("$2")) {
+        isMatch = await bcrypt.compare(password, user.password);
+      } else {
+        // Fallback for old users with plain text passwords
+        isMatch = password === user.password;
+
+        // Optional: Migrate their password to bcrypt here
+        if (isMatch) {
+          const hashed = await bcrypt.hash(password, 10);
+          await pool.query("UPDATE users SET password = ? WHERE id = ?", [
+            hashed,
+            user.id,
+          ]);
         }
-        res.status(500).json({ message: 'Error registering user', error: error.message });
+      }
+
+      if (isMatch) {
+        delete user.password; // Don't send password back
+        res.json({ message: "Login successful", user });
+      } else {
+        res.status(401).json({ message: "Invalid credentials" });
+      }
+    } else {
+      res.status(401).json({ message: "Invalid credentials" });
     }
+  } catch (error) {
+    res.status(500).json({ message: "Error logging in", error: error.message });
+  }
 });
 
-app.post('/api/users/login', async (req, res) => {
-    try {
-        const email = req.body.email ? req.body.email.trim().toLowerCase() : '';
-        const password = req.body.password;
-        const [rows] = await pool.query('SELECT * FROM users WHERE email = ?', [email]);
-        if (rows.length > 0) {
-            const user = rows[0];
-            
-            // Check if it is a bcrypt hash (starts with $2a$, $2b$, etc.)
-            let isMatch = false;
-            if (user.password.startsWith('$2')) {
-                isMatch = await bcrypt.compare(password, user.password);
-            } else {
-                // Fallback for old users with plain text passwords
-                isMatch = (password === user.password);
-                
-                // Optional: Migrate their password to bcrypt here
-                if (isMatch) {
-                    const hashed = await bcrypt.hash(password, 10);
-                    await pool.query('UPDATE users SET password = ? WHERE id = ?', [hashed, user.id]);
-                }
-            }
-
-            if (isMatch) {
-                delete user.password; // Don't send password back
-                res.json({ message: 'Login successful', user });
-            } else {
-                res.status(401).json({ message: 'Invalid credentials' });
-            }
-        } else {
-            res.status(401).json({ message: 'Invalid credentials' });
-        }
-    } catch (error) {
-        res.status(500).json({ message: 'Error logging in', error: error.message });
-    }
+app.get("/api/activities", async (req, res) => {
+  try {
+    const [rows] = await pool.query(
+      "SELECT * FROM activities ORDER BY created_at DESC",
+    );
+    res.json(rows);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error fetching activities", error: error.message });
+  }
 });
 
-app.get('/api/activities', async (req, res) => {
-    try {
-        const [rows] = await pool.query('SELECT * FROM activities ORDER BY created_at DESC');
-        res.json(rows);
-    } catch (error) {
-        res.status(500).json({ message: 'Error fetching activities', error: error.message });
-    }
+app.post("/api/activities", async (req, res) => {
+  try {
+    const { title, description } = req.body;
+    const [result] = await pool.query(
+      "INSERT INTO activities (title, description) VALUES (?, ?)",
+      [title, description],
+    );
+    res.status(201).json({ id: result.insertId, title, description });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error creating activity", error: error.message });
+  }
 });
 
-app.post('/api/activities', async (req, res) => {
-    try {
-        const { title, description } = req.body;
-        const [result] = await pool.query(
-            'INSERT INTO activities (title, description) VALUES (?, ?)',
-            [title, description]
-        );
-        res.status(201).json({ id: result.insertId, title, description });
-    } catch (error) {
-        res.status(500).json({ message: 'Error creating activity', error: error.message });
+app.post("/api/participantes", async (req, res) => {
+  try {
+    const { userId, activityId } = req.body;
+    const [result] = await pool.query(
+      "INSERT INTO enrollments (user_id, activity_id) VALUES (?, ?)",
+      [userId, activityId],
+    );
+    res
+      .status(201)
+      .json({ id: result.insertId, userId, activityId, attended: false });
+  } catch (error) {
+    if (error.code === "ER_DUP_ENTRY") {
+      return res
+        .status(400)
+        .json({ message: "User already enrolled in this activity" });
     }
-});
-
-app.post('/api/participantes', async (req, res) => {
-    try {
-        const { userId, activityId } = req.body;
-        const [result] = await pool.query(
-            'INSERT INTO enrollments (user_id, activity_id) VALUES (?, ?)',
-            [userId, activityId]
-        );
-        res.status(201).json({ id: result.insertId, userId, activityId, attended: false });
-    } catch (error) {
-        if (error.code === 'ER_DUP_ENTRY') {
-            return res.status(400).json({ message: 'User already enrolled in this activity' });
-        }
-        res.status(500).json({ message: 'Error enrolling user', error: error.message });
-    }
+    res
+      .status(500)
+      .json({ message: "Error enrolling user", error: error.message });
+  }
 });
 
 app.post("/api/generate-description", async (req, res) => {
@@ -138,171 +160,218 @@ app.post("/api/generate-description", async (req, res) => {
   }
 });
 
-app.put('/api/activities/:id', async (req, res) => {
-    try {
-        const { id } = req.params;
-        const { title, description } = req.body;
-        await pool.query('UPDATE activities SET title = ?, description = ? WHERE id = ?', [title, description, id]);
-        res.json({ message: 'Activity updated successfully' });
-    } catch (error) {
-        res.status(500).json({ message: 'Error updating activity', error: error.message });
-    }
+app.put("/api/activities/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, description } = req.body;
+    await pool.query(
+      "UPDATE activities SET title = ?, description = ? WHERE id = ?",
+      [title, description, id],
+    );
+    res.json({ message: "Activity updated successfully" });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error updating activity", error: error.message });
+  }
 });
 
-app.delete('/api/activities/:id', async (req, res) => {
-    try {
-        const { id } = req.params;
-        await pool.query('DELETE FROM activities WHERE id = ?', [id]);
-        res.json({ message: 'Activity deleted successfully' });
-    } catch (error) {
-        res.status(500).json({ message: 'Error deleting activity', error: error.message });
-    }
+app.delete("/api/activities/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    await pool.query("DELETE FROM activities WHERE id = ?", [id]);
+    res.json({ message: "Activity deleted successfully" });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error deleting activity", error: error.message });
+  }
 });
 
-app.get('/api/activities/:id/participantes', async (req, res) => {
-    try {
-        const { id } = req.params;
-        const [rows] = await pool.query(`
+app.get("/api/activities/:id/participantes", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const [rows] = await pool.query(
+      `
             SELECT e.id as enrollment_id, u.name, u.email, e.attended 
             FROM enrollments e 
             JOIN users u ON e.user_id = u.id 
             WHERE e.activity_id = ?
-        `, [id]);
-        res.json(rows);
-    } catch (error) {
-        res.status(500).json({ message: 'Error fetching participants', error: error.message });
-    }
+        `,
+      [id],
+    );
+    res.json(rows);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error fetching participants", error: error.message });
+  }
 });
 
-app.put('/api/participantes/:id/asistencia', async (req, res) => {
-    try {
-        const { id } = req.params;
-        const { attended } = req.body;
-        await pool.query('UPDATE enrollments SET attended = ? WHERE id = ?', [attended, id]);
-        res.json({ message: 'Attendance updated' });
-    } catch (error) {
-        res.status(500).json({ message: 'Error updating attendance', error: error.message });
-    }
+app.put("/api/participantes/:id/asistencia", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { attended } = req.body;
+    await pool.query("UPDATE enrollments SET attended = ? WHERE id = ?", [
+      attended,
+      id,
+    ]);
+    res.json({ message: "Attendance updated" });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error updating attendance", error: error.message });
+  }
 });
 
 // NUEVOS MÓDULOS
 
 // 1. Alumno Inscripciones
-app.get('/api/users/:id/enrollments', async (req, res) => {
-    try {
-        const { id } = req.params;
-        const [rows] = await pool.query(`
+app.get("/api/users/:id/enrollments", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const [rows] = await pool.query(
+      `
             SELECT e.activity_id, a.title, a.description, e.attended
             FROM enrollments e
             JOIN activities a ON e.activity_id = a.id
             WHERE e.user_id = ?
-        `, [id]);
-        res.json(rows);
-    } catch (error) {
-        res.status(500).json({ message: 'Error fetching user enrollments', error: error.message });
-    }
+        `,
+      [id],
+    );
+    res.json(rows);
+  } catch (error) {
+    res.status(500).json({
+      message: "Error fetching user enrollments",
+      error: error.message,
+    });
+  }
 });
 
 // 2. Admin Usuarios
-app.get('/api/users', async (req, res) => {
-    try {
-        const [rows] = await pool.query('SELECT id, name, email, role FROM users');
-        res.json(rows);
-    } catch (error) {
-        res.status(500).json({ message: 'Error fetching users', error: error.message });
-    }
+app.get("/api/users", async (req, res) => {
+  try {
+    const [rows] = await pool.query("SELECT id, name, email, role FROM users");
+    res.json(rows);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error fetching users", error: error.message });
+  }
 });
 
-app.put('/api/users/:id/role', async (req, res) => {
-    try {
-        const { id } = req.params;
-        const { role } = req.body;
-        if (role !== 'Admin' && role !== 'Alumno') {
-            return res.status(400).json({ message: 'Invalid role' });
-        }
-        await pool.query('UPDATE users SET role = ? WHERE id = ?', [role, id]);
-        res.json({ message: 'Role updated successfully' });
-    } catch (error) {
-        res.status(500).json({ message: 'Error updating role', error: error.message });
+app.put("/api/users/:id/role", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { role } = req.body;
+    if (role !== "Admin" && role !== "Alumno") {
+      return res.status(400).json({ message: "Invalid role" });
     }
+    await pool.query("UPDATE users SET role = ? WHERE id = ?", [role, id]);
+    res.json({ message: "Role updated successfully" });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error updating role", error: error.message });
+  }
 });
 
-app.put('/api/users/:id', async (req, res) => {
-    try {
-        const { id } = req.params;
-        const { name, email } = req.body;
-        await pool.query('UPDATE users SET name = ?, email = ? WHERE id = ?', [name, email, id]);
-        res.json({ message: 'User updated successfully' });
-    } catch (error) {
-        res.status(500).json({ message: 'Error updating user', error: error.message });
-    }
+app.put("/api/users/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, email } = req.body;
+    await pool.query("UPDATE users SET name = ?, email = ? WHERE id = ?", [
+      name,
+      email,
+      id,
+    ]);
+    res.json({ message: "User updated successfully" });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error updating user", error: error.message });
+  }
 });
 
-app.delete('/api/users/:id', async (req, res) => {
-    try {
-        const { id } = req.params;
-        await pool.query('DELETE FROM users WHERE id = ?', [id]);
-        res.json({ message: 'User deleted successfully' });
-    } catch (error) {
-        res.status(500).json({ message: 'Error deleting user', error: error.message });
-    }
+app.delete("/api/users/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    await pool.query("DELETE FROM users WHERE id = ?", [id]);
+    res.json({ message: "User deleted successfully" });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error deleting user", error: error.message });
+  }
 });
 
 // 3. Admin Reportes (IA)
-app.get('/api/reportes/generar', async (req, res) => {
-    try {
-        const [activitiesCountRows] = await pool.query('SELECT COUNT(*) as total FROM activities');
-        const totalActivities = activitiesCountRows[0].total;
+app.get("/api/reportes/generar", async (req, res) => {
+  try {
+    const [activitiesCountRows] = await pool.query(
+      "SELECT COUNT(*) as total FROM activities",
+    );
+    const totalActivities = activitiesCountRows[0].total;
 
-        const [attendanceRows] = await pool.query('SELECT COUNT(attended) as total_attended, COUNT(*) as total_enrollments FROM enrollments WHERE attended = true');
-        const [allEnrollments] = await pool.query('SELECT COUNT(*) as total_enrollments FROM enrollments');
-        
-        const totalEnrollments = allEnrollments[0].total_enrollments;
-        const totalAttended = attendanceRows[0].total_attended || 0;
+    const [attendanceRows] = await pool.query(
+      "SELECT COUNT(attended) as total_attended, COUNT(*) as total_enrollments FROM enrollments WHERE attended = true",
+    );
+    const [allEnrollments] = await pool.query(
+      "SELECT COUNT(*) as total_enrollments FROM enrollments",
+    );
 
-        const prompt = `Actúa como un coordinador académico. Escribe un resumen ejecutivo breve y profesional en español sobre la participación en las actividades universitarias. Datos actuales: ${totalActivities} actividades creadas, ${totalEnrollments} inscripciones totales y ${totalAttended} asistencias confirmadas.`;
+    const totalEnrollments = allEnrollments[0].total_enrollments;
+    const totalAttended = attendanceRows[0].total_attended || 0;
 
-        if (!process.env.GEMINI_API_KEY) {
-            return res.json({
-                reporte: `Resumen Ejecutivo (Simulado): Actualmente tenemos ${totalActivities} actividades con ${totalEnrollments} inscripciones y ${totalAttended} asistencias. (Configura GEMINI_API_KEY).`
-            });
-        }
+    const prompt = `Actúa como un coordinador académico. Escribe un resumen ejecutivo breve y profesional en español sobre la participación en las actividades universitarias. Datos actuales: ${totalActivities} actividades creadas, ${totalEnrollments} inscripciones totales y ${totalAttended} asistencias confirmadas.`;
 
-        const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
-
-        const result = await model.generateContent(prompt);
-        const response = await result.response;
-        const text = response.text();
-
-        res.json({ reporte: text });
-    } catch (error) {
-        console.error("Error generating report:", error);
-        res.status(500).json({ message: 'Error generating report', error: error.message });
+    if (!process.env.GEMINI_API_KEY) {
+      return res.json({
+        reporte: `Resumen Ejecutivo (Simulado): Actualmente tenemos ${totalActivities} actividades con ${totalEnrollments} inscripciones y ${totalAttended} asistencias. (Configura GEMINI_API_KEY).`,
+      });
     }
+
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const text = response.text();
+
+    res.json({ reporte: text });
+  } catch (error) {
+    console.error("Error generating report:", error);
+    res
+      .status(500)
+      .json({ message: "Error generating report", error: error.message });
+  }
 });
 
 // Dashboard metrics
-app.get('/api/metrics', async (req, res) => {
-    try {
-        const [rows] = await pool.query('SELECT * FROM dashboard_metrics LIMIT 1');
-        
-        // Obtenemos conteos reales para complementar
-        const [userCount] = await pool.query("SELECT COUNT(*) as count FROM users");
-        const [activityCount] = await pool.query("SELECT COUNT(*) as count FROM activities");
+app.get("/api/metrics", async (req, res) => {
+  try {
+    const [rows] = await pool.query("SELECT * FROM dashboard_metrics LIMIT 1");
 
-        if (rows.length > 0) {
-            const metrics = rows[0];
-            metrics.usuarios_reales = userCount[0].count;
-            metrics.actividades_reales = activityCount[0].count;
-            res.json(metrics);
-        } else {
-            res.status(404).json({ message: 'Metrics not found' });
-        }
-    } catch (error) {
-        console.error("Error fetching metrics:", error);
-        res.status(500).json({ message: 'Error fetching metrics', error: error.message });
+    // Obtenemos conteos reales para complementar
+    const [userCount] = await pool.query("SELECT COUNT(*) as count FROM users");
+    const [activityCount] = await pool.query(
+      "SELECT COUNT(*) as count FROM activities",
+    );
+
+    if (rows.length > 0) {
+      const metrics = rows[0];
+      metrics.usuarios_reales = userCount[0].count;
+      metrics.actividades_reales = activityCount[0].count;
+      res.json(metrics);
+    } else {
+      res.status(404).json({ message: "Metrics not found" });
     }
+  } catch (error) {
+    console.error("Error fetching metrics:", error);
+    res
+      .status(500)
+      .json({ message: "Error fetching metrics", error: error.message });
+  }
 });
 
 module.exports = app;
