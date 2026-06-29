@@ -58,7 +58,6 @@ jobs:
 
       - name: Test Frontend (Karma/Jasmine)
         run: cd frontend && npm run test:ci
-        run: cd frontend && npm run test:ci
 
       # ---- Docker Build ----
       - name: Build Docker Compose
