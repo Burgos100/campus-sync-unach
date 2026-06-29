@@ -79,7 +79,12 @@
       <h3 class="text-headline-md font-bold text-on-surface flex items-center gap-2">
         <span class="material-symbols-outlined text-primary">analytics</span> Resumen Ejecutivo Generado
       </h3>
-      <button (click)="generarReporte()" class="bg-primary/10 text-primary px-4 py-2 rounded-lg font-bold text-label-sm hover:bg-primary/20 transition-colors">Generar Nuevo</button>
+      <div class="flex gap-2">
+        <button (click)="descargarReporte()" class="bg-tertiary text-on-tertiary px-4 py-2 rounded-lg font-bold text-label-sm hover:brightness-110 flex items-center gap-2 transition-colors">
+          <span class="material-symbols-outlined text-sm">download</span> Descargar
+        </button>
+        <button (click)="generarReporte()" class="bg-primary/10 text-primary px-4 py-2 rounded-lg font-bold text-label-sm hover:bg-primary/20 transition-colors">Generar Nuevo</button>
+      </div>
     </div>
     <div class="prose max-w-none text-on-surface-variant flex-1 overflow-y-auto custom-scrollbar pr-2">
       <p class="whitespace-pre-wrap text-body-md">{{ reporteGenerado }}</p>
@@ -156,52 +161,6 @@
 <p class="text-display-lg text-tertiary">{{ metrics?.latencia || 1.2 }}s</p>>
 <p class="text-[10px] font-bold text-secondary uppercase">Latencia</p>
 </div>
-</div>
-</div>
-</div>
-</div>
-<!-- Visualization Grid -->
-<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
-<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant bento-card">
-<div class="flex items-center gap-3 mb-4">
-<div class="p-2 bg-primary-container/20 rounded-lg">
-<span class="material-symbols-outlined text-primary">groups</span>
-</div>
-<div>
-<p class="text-label-sm font-bold text-secondary uppercase">Asistencia</p>
-<p class="text-headline-md font-bold">{{ (metrics?.asistencia_total | number) || '1,240' }} <span class="text-tertiary text-label-sm font-normal">↑ 4%</span></p>
-</div>
-</div>
-<div class="h-2 w-full bg-surface-container rounded-full overflow-hidden">
-<div class="h-full bg-primary rounded-full w-[85%]"></div>
-</div>
-</div>
-<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant bento-card">
-<div class="flex items-center gap-3 mb-4">
-<div class="p-2 bg-tertiary-container/20 rounded-lg">
-<span class="material-symbols-outlined text-tertiary">event_available</span>
-</div>
-<div>
-<p class="text-label-sm font-bold text-secondary uppercase">Actividades</p>
-<p class="text-headline-md font-bold">{{ metrics?.actividades_reales || 42 }} <span class="text-tertiary text-label-sm font-normal">↑ 8%</span></p>
-</div>
-</div>
-<div class="h-2 w-full bg-surface-container rounded-full overflow-hidden">
-<div class="h-full bg-tertiary rounded-full w-[65%]"></div>
-</div>
-</div>
-<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant bento-card">
-<div class="flex items-center gap-3 mb-4">
-<div class="p-2 bg-secondary-container/20 rounded-lg">
-<span class="material-symbols-outlined text-on-secondary-container">sentiment_satisfied</span>
-</div>
-<div>
-<p class="text-label-sm font-bold text-secondary uppercase">Satisfacción</p>
-<p class="text-headline-md font-bold">{{ metrics?.satisfaccion || 4.8 }} <span class="text-tertiary text-label-sm font-normal">↑ 0.2</span></p>
-</div>
-</div>
-<div class="h-2 w-full bg-surface-container rounded-full overflow-hidden">
-<div class="h-full bg-on-secondary-container rounded-full w-[92%]"></div>
 </div>
 </div>
 </div>

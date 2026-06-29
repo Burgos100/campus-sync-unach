@@ -192,7 +192,7 @@ app.get('/api/users/:id/enrollments', async (req, res) => {
     try {
         const { id } = req.params;
         const [rows] = await pool.query(`
-            SELECT a.title, a.description, e.attended
+            SELECT e.activity_id, a.title, a.description, e.attended
             FROM enrollments e
             JOIN activities a ON e.activity_id = a.id
             WHERE e.user_id = ?
@@ -210,6 +210,41 @@ app.get('/api/users', async (req, res) => {
         res.json(rows);
     } catch (error) {
         res.status(500).json({ message: 'Error fetching users', error: error.message });
+    }
+});
+
+app.put('/api/users/:id/role', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { role } = req.body;
+        if (role !== 'Admin' && role !== 'Alumno') {
+            return res.status(400).json({ message: 'Invalid role' });
+        }
+        await pool.query('UPDATE users SET role = ? WHERE id = ?', [role, id]);
+        res.json({ message: 'Role updated successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error updating role', error: error.message });
+    }
+});
+
+app.put('/api/users/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { name, email } = req.body;
+        await pool.query('UPDATE users SET name = ?, email = ? WHERE id = ?', [name, email, id]);
+        res.json({ message: 'User updated successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error updating user', error: error.message });
+    }
+});
+
+app.delete('/api/users/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        await pool.query('DELETE FROM users WHERE id = ?', [id]);
+        res.json({ message: 'User deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error deleting user', error: error.message });
     }
 });
 
@@ -250,11 +285,11 @@ app.get('/api/reportes/generar', async (req, res) => {
 // Dashboard metrics
 app.get('/api/metrics', async (req, res) => {
     try {
-        const [rows] = await db.pool.query('SELECT * FROM dashboard_metrics LIMIT 1');
+        const [rows] = await pool.query('SELECT * FROM dashboard_metrics LIMIT 1');
         
         // Obtenemos conteos reales para complementar
-        const [userCount] = await db.pool.query("SELECT COUNT(*) as count FROM users");
-        const [activityCount] = await db.pool.query("SELECT COUNT(*) as count FROM activities");
+        const [userCount] = await pool.query("SELECT COUNT(*) as count FROM users");
+        const [activityCount] = await pool.query("SELECT COUNT(*) as count FROM activities");
 
         if (rows.length > 0) {
             const metrics = rows[0];

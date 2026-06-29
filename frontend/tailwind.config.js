@@ -84,6 +84,17 @@ module.exports = {
                       "label-sm": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}],
                       "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
                       "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}]
+              },
+              "keyframes": {
+                "fade-in-up": {
+                  '0%': { opacity: '0', transform: 'translateY(10px)' },
+                  '10%': { opacity: '1', transform: 'translateY(0)' },
+                  '90%': { opacity: '1', transform: 'translateY(0)' },
+                  '100%': { opacity: '0', transform: 'translateY(10px)' },
+                }
+              },
+              "animation": {
+                "fade-in-up": "fade-in-up 4s ease-in-out forwards",
               }
             }
           },

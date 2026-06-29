@@ -1,13 +1,16 @@
 
 <!-- Welcome Header Card -->
 
-<div *ngIf="errorMessage" class="bg-error/10 text-error px-4 py-3 rounded-xl text-sm font-medium border border-error/20 flex items-center gap-2 mb-6">
+<!-- Toast Notifications -->
+<div *ngIf="errorMessage" class="fixed bottom-6 right-6 bg-error text-on-error px-6 py-4 rounded-xl text-body-md font-bold shadow-2xl flex items-center gap-3 z-50 animate-fade-in-up">
   <span class="material-symbols-outlined">error</span>
   <span>{{ errorMessage }}</span>
 </div>
-<div *ngIf="successMessage" class="bg-tertiary/10 text-tertiary px-4 py-3 rounded-xl text-sm font-medium border border-tertiary/20 flex items-center gap-2 mb-6">
+<div *ngIf="successMessage" class="fixed bottom-6 right-6 bg-tertiary text-on-tertiary px-6 py-4 rounded-xl text-body-md font-bold shadow-2xl flex items-center gap-3 z-50 animate-fade-in-up">
+  <span class="material-symbols-outlined">check_circle</span>
   <span>{{ successMessage }}</span>
 </div>
+
 <section class="mb-10 animate-fade-in">
 <div class="bg-white rounded-xl shadow-sm border border-outline-variant p-8 primary-accent-bar bento-card-gradient">
 <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -58,8 +61,11 @@
           <span class="material-symbols-outlined text-[20px]">group</span>
           <span class="text-label-sm">Cupos disp.</span>
         </div>
-        <button (click)="enroll(act.id)" class="bg-primary text-white text-label-sm font-semibold px-6 py-2.5 rounded-lg hover:bg-primary-container active:scale-95 transition-all">
+        <button *ngIf="!isEnrolled(act.id)" (click)="enroll(act.id)" class="bg-primary text-white text-label-sm font-semibold px-6 py-2.5 rounded-lg hover:bg-primary-container active:scale-95 transition-all">
           Inscribirse
+        </button>
+        <button *ngIf="isEnrolled(act.id)" disabled class="bg-surface-container-high text-secondary text-label-sm font-semibold px-6 py-2.5 rounded-lg border border-outline-variant transition-all cursor-not-allowed flex items-center gap-2">
+          <span class="material-symbols-outlined text-[16px]">check</span> Inscrito
         </button>
       </div>
     </div>

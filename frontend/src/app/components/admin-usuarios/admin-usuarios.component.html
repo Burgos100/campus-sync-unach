@@ -1,11 +1,20 @@
-
+<!-- Toast Notifications -->
+<div *ngIf="errorMessage" class="fixed bottom-6 right-6 bg-error text-on-error px-6 py-4 rounded-xl text-body-md font-bold shadow-2xl flex items-center gap-3 z-50 animate-fade-in-up">
+  <span class="material-symbols-outlined">error</span>
+  <span>{{ errorMessage }}</span>
+</div>
+<div *ngIf="successMessage" class="fixed bottom-6 right-6 bg-tertiary text-on-tertiary px-6 py-4 rounded-xl text-body-md font-bold shadow-2xl flex items-center gap-3 z-50 animate-fade-in-up">
+  <span class="material-symbols-outlined">check_circle</span>
+  <span>{{ successMessage }}</span>
+</div>
 
 <div class="max-w-container-max mx-auto px-6 py-10 md:px-10 lg:px-12">
   <div *ngIf="loading" class="text-center py-12">
-    <p class="text-gray-500">Cargando usuarios...</p>
+    <div class="w-12 h-12 mb-4 rounded-full border-4 border-surface-container-high border-t-primary animate-spin mx-auto"></div>
+    <p class="text-secondary font-bold">Cargando usuarios...</p>
   </div>
-  <div *ngIf="!loading && error" class="bg-red-50 text-red-600 p-4 rounded-xl mb-6">
-    {{ error }}
+  <div *ngIf="!loading && error" class="bg-error/10 text-error p-4 rounded-xl mb-6 font-bold flex items-center gap-2">
+    <span class="material-symbols-outlined">error</span> {{ error }}
   </div>
   <div *ngIf="!loading && !error">
 
@@ -19,38 +28,12 @@
 <div class="flex gap-3">
 <div class="relative">
 <input class="pl-10 pr-4 py-2 bg-surface-container-low border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-body-md font-body-md w-full md:w-64" placeholder="Buscar usuario..." type="text"/>
-<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline" data-icon="search">search</span>
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
 </div>
 </div>
 </div>
 </div>
-<!-- Bento Grid - Stats and Table Container -->
-<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter mb-8">
-<div class="md:col-span-1 bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/30 flex flex-col items-center justify-center text-center">
-<span class="text-label-sm font-label-sm text-secondary uppercase tracking-widest mb-1">Total Usuarios</span>
-<span class="text-headline-xl font-headline-xl text-primary">1,284</span>
-</div>
-<div class="md:col-span-1 bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/30 flex flex-col items-center justify-center text-center">
-<span class="text-label-sm font-label-sm text-secondary uppercase tracking-widest mb-1">Admins</span>
-<span class="text-headline-xl font-headline-xl text-on-tertiary-container">12</span>
-</div>
-<div class="md:col-span-2 bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/30 flex items-center justify-between overflow-hidden relative">
-<div>
-<span class="text-label-sm font-label-sm text-secondary uppercase tracking-widest mb-1">Nuevos este mes</span>
-<span class="text-headline-xl font-headline-xl text-on-surface">+156</span>
-</div>
-<div class="w-32 h-16 opacity-20">
-<!-- Placeholder for small chart effect -->
-<div class="flex items-end gap-1 h-full">
-<div class="bg-primary w-2 h-4 rounded-t-sm"></div>
-<div class="bg-primary w-2 h-8 rounded-t-sm"></div>
-<div class="bg-primary w-2 h-6 rounded-t-sm"></div>
-<div class="bg-primary w-2 h-12 rounded-t-sm"></div>
-<div class="bg-primary w-2 h-16 rounded-t-sm"></div>
-</div>
-</div>
-</div>
-</div>
+
 <!-- Professional Data Table Card -->
 <div class="bg-surface-container-lowest rounded-xl shadow-[0_4px_6px_-1px_rgb(0,0,0,0.05)] border border-outline-variant overflow-hidden">
 <div class="overflow-x-auto">
@@ -70,38 +53,64 @@
     <td colspan="5" class="p-8 text-center text-gray-500">No hay usuarios registrados.</td>
   </tr>
   <tr *ngFor="let user of usuarios" class="hover:bg-primary/5 transition-colors group">
-    <td class="px-6 py-5">
-      <div class="flex items-center gap-4">
-        <div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container font-bold overflow-hidden">
-          <span class="material-symbols-outlined text-gray-400">person</span>
+    
+    <ng-container *ngIf="editingUserId !== user.id">
+      <td class="px-6 py-5">
+        <div class="flex items-center gap-4">
+          <div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container font-bold overflow-hidden">
+            <span class="material-symbols-outlined text-secondary">person</span>
+          </div>
+          <div>
+            <p class="font-bold text-on-surface text-body-md font-body-md">{{ user.name }}</p>
+            <p class="text-label-sm font-label-sm text-secondary">ID: {{ user.id || 'N/A' }}</p>
+          </div>
         </div>
-        <div>
-          <p class="font-bold text-on-surface text-body-md font-body-md">{{ user.name }}</p>
-          <p class="text-label-sm font-label-sm text-secondary">ID: {{ user.id || 'N/A' }}</p>
+      </td>
+      <td class="px-6 py-5 text-body-md font-body-md text-secondary">{{ user.email }}</td>
+      <td class="px-6 py-5">
+        <span class="px-3 py-1 rounded-full text-label-sm font-label-sm border"
+              [ngClass]="{'bg-secondary-container/50 text-on-secondary-fixed-variant border-secondary-fixed-dim': user.role === 'Admin', 'bg-primary-fixed/30 text-primary border-primary-fixed': user.role !== 'Admin'}">
+          {{ user.role }}
+        </span>
+      </td>
+      <td class="px-6 py-5">
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-tertiary"></span>
+          <span class="text-label-sm font-label-sm text-tertiary">Activo</span>
         </div>
-      </div>
-    </td>
-    <td class="px-6 py-5 text-body-md font-body-md text-secondary">{{ user.email }}</td>
-    <td class="px-6 py-5">
-      <span class="px-3 py-1 rounded-full text-label-sm font-label-sm border"
-            [ngClass]="{'bg-secondary-container/50 text-on-secondary-fixed-variant border-secondary-fixed-dim': user.role === 'Admin', 'bg-primary-fixed/30 text-primary border-primary-fixed': user.role !== 'Admin'}">
-        {{ user.role }}
-      </span>
-    </td>
-    <td class="px-6 py-5">
-      <div class="flex items-center gap-2">
-        <span class="w-2 h-2 rounded-full bg-tertiary"></span>
-        <span class="text-label-sm font-label-sm text-tertiary">Activo</span>
-      </div>
-    </td>
-    <td class="px-6 py-5 text-right">
-      <button class="p-2 hover:bg-surface-variant rounded-lg transition-all text-secondary">
-        <span class="material-symbols-outlined" data-icon="edit">edit</span>
-      </button>
-      <button class="p-2 hover:bg-error-container/20 rounded-lg transition-all text-error">
-        <span class="material-symbols-outlined" data-icon="delete">delete</span>
-      </button>
-    </td>
+      </td>
+      <td class="px-6 py-5 text-right flex justify-end gap-1">
+        <button (click)="cambiarRol(user)" title="Cambiar Rol" class="p-2 hover:bg-surface-variant rounded-lg transition-all text-secondary">
+          <span class="material-symbols-outlined">swap_horiz</span>
+        </button>
+        <button (click)="iniciarEdicion(user)" title="Editar" class="p-2 hover:bg-surface-variant rounded-lg transition-all text-secondary">
+          <span class="material-symbols-outlined">edit</span>
+        </button>
+        <button (click)="eliminarUsuario(user)" title="Eliminar" class="p-2 hover:bg-error-container/20 rounded-lg transition-all text-error">
+          <span class="material-symbols-outlined">delete</span>
+        </button>
+      </td>
+    </ng-container>
+
+    <ng-container *ngIf="editingUserId === user.id">
+      <td class="px-6 py-5">
+        <input [(ngModel)]="editName" class="w-full bg-surface-container-low border border-outline-variant rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary/20 outline-none" type="text"/>
+      </td>
+      <td class="px-6 py-5">
+        <input [(ngModel)]="editEmail" class="w-full bg-surface-container-low border border-outline-variant rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary/20 outline-none" type="email"/>
+      </td>
+      <td class="px-6 py-5"><span class="text-secondary">{{ user.role }}</span></td>
+      <td class="px-6 py-5"><span class="text-secondary">Activo</span></td>
+      <td class="px-6 py-5 text-right flex justify-end gap-1">
+        <button (click)="guardarEdicion(user)" title="Guardar" class="p-2 hover:bg-tertiary-container/20 rounded-lg transition-all text-tertiary">
+          <span class="material-symbols-outlined">check</span>
+        </button>
+        <button (click)="cancelarEdicion()" title="Cancelar" class="p-2 hover:bg-surface-variant rounded-lg transition-all text-secondary">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </td>
+    </ng-container>
+
   </tr>
 </tbody>
 
@@ -109,20 +118,18 @@
 </div>
 <!-- Pagination -->
 <div class="px-6 py-4 bg-surface-container-low border-t border-outline-variant flex items-center justify-between">
-<p class="text-label-sm font-label-sm text-secondary">Mostrando 3 de 1,284 usuarios</p>
+<p class="text-label-sm font-label-sm text-secondary">Mostrando {{ usuarios.length }} usuarios</p>
 <div class="flex gap-2">
 <button class="p-2 border border-outline-variant rounded-lg hover:bg-surface-container transition-all disabled:opacity-50" disabled="">
-<span class="material-symbols-outlined text-[20px]" data-icon="chevron_left">chevron_left</span>
+<span class="material-symbols-outlined text-[20px]">chevron_left</span>
 </button>
 <button class="px-4 py-2 bg-primary text-white rounded-lg font-bold text-label-sm">1</button>
-<button class="px-4 py-2 hover:bg-surface-container rounded-lg text-label-sm">2</button>
-<button class="px-4 py-2 hover:bg-surface-container rounded-lg text-label-sm">3</button>
-<button class="p-2 border border-outline-variant rounded-lg hover:bg-surface-container transition-all">
-<span class="material-symbols-outlined text-[20px]" data-icon="chevron_right">chevron_right</span>
+<button class="p-2 border border-outline-variant rounded-lg hover:bg-surface-container transition-all disabled:opacity-50" disabled="">
+<span class="material-symbols-outlined text-[20px]">chevron_right</span>
 </button>
 </div>
 </div>
 </div>
 </div>
 
-  </div>
+</div>

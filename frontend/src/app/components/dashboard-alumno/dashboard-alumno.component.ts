@@ -33,6 +33,7 @@ export class DashboardAlumnoComponent implements OnInit {
       return;
     }
     this.loadActivities();
+    this.loadEnrollments();
   }
 
   logout() {
@@ -47,14 +48,45 @@ export class DashboardAlumnoComponent implements OnInit {
     });
   }
 
+  loadEnrollments() {
+    this.http.get<any[]>(`${this.apiUrl}/users/${this.user.id}/enrollments`).subscribe({
+      next: (data) => {
+        this.myEnrollments = data.map(e => e.activity_id);
+      },
+      error: (err) => console.error('Error cargando inscripciones', err)
+    });
+  }
+
+  isEnrolled(activityId: number): boolean {
+    return this.myEnrollments.includes(activityId);
+  }
+
+  showToast(type: 'success' | 'error', message: string) {
+    if (type === 'success') {
+      this.successMessage = message;
+    } else {
+      this.errorMessage = message;
+    }
+    setTimeout(() => {
+      this.errorMessage = '';
+      this.successMessage = '';
+    }, 4000);
+  }
+
   enroll(activityId: number) {
     this.errorMessage = '';
     this.successMessage = '';
     this.http.post(`${this.apiUrl}/participantes`, { userId: this.user.id, activityId }).subscribe({
       next: () => {
-        this.successMessage = '¡Inscrito exitosamente!';
+        this.showToast('success', '¡Inscrito exitosamente!');
+        this.myEnrollments.push(activityId); // Actualizar UI de inmediato
       },
-      error: (err) => this.errorMessage = err.error?.message || 'Error al inscribirse'
+      error: (err) => {
+        const msg = err.error?.message === 'User already enrolled in this activity' 
+          ? 'Ya estás inscrito en esta actividad.' 
+          : 'Error al inscribirse';
+        this.showToast('error', msg);
+      }
     });
   }
 }

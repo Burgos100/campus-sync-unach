@@ -20,6 +20,7 @@ export class DashboardAdminComponent implements OnInit {
   newActivityTitle = '';
   newActivityTopic = '';
   generatedDescription = '';
+  editingActivityId: number | null = null;
 
   errorMessage = '';
   successMessage = '';
@@ -62,43 +63,85 @@ export class DashboardAdminComponent implements OnInit {
     });
   }
 
+  showToast(type: 'success' | 'error', message: string) {
+    if (type === 'success') {
+      this.successMessage = message;
+    } else {
+      this.errorMessage = message;
+    }
+    setTimeout(() => {
+      this.clearMessages();
+    }, 4000);
+  }
+
   generateDescription() {
     this.clearMessages();
     if (!this.newActivityTopic) {
-      this.errorMessage = 'Ingresa el tema.';
+      this.showToast('error', 'Ingresa el tema.');
       return;
     }
     this.http.post<{description: string}>(`${this.apiUrl}/generate-description`, { topic: this.newActivityTopic }).subscribe({
       next: (res) => this.generatedDescription = res.description,
-      error: (err) => this.errorMessage = 'Error generando descripción con IA'
+      error: (err) => this.showToast('error', 'Error generando descripción con IA')
     });
   }
 
   createActivity() {
     this.clearMessages();
     if (!this.newActivityTitle || !this.generatedDescription) return;
-    this.http.post(`${this.apiUrl}/activities`, { 
-      title: this.newActivityTitle, description: this.generatedDescription 
-    }).subscribe({
-      next: () => {
-        this.successMessage = 'Actividad creada exitosamente';
-        this.newActivityTitle = '';
-        this.newActivityTopic = '';
-        this.generatedDescription = '';
-        this.loadActivities();
-      },
-      error: (err) => this.errorMessage = 'Error al crear actividad'
-    });
+
+    if (this.editingActivityId) {
+      this.http.put(`${this.apiUrl}/activities/${this.editingActivityId}`, { 
+        title: this.newActivityTitle, description: this.generatedDescription 
+      }).subscribe({
+        next: () => {
+          this.showToast('success', 'Actividad actualizada exitosamente');
+          this.resetForm();
+          this.loadActivities();
+        },
+        error: (err) => this.showToast('error', 'Error al actualizar actividad')
+      });
+    } else {
+      this.http.post(`${this.apiUrl}/activities`, { 
+        title: this.newActivityTitle, description: this.generatedDescription 
+      }).subscribe({
+        next: () => {
+          this.showToast('success', 'Actividad creada exitosamente');
+          this.resetForm();
+          this.loadActivities();
+        },
+        error: (err) => this.showToast('error', 'Error al crear actividad')
+      });
+    }
+  }
+
+  startEditActivity(activity: any) {
+    this.editingActivityId = activity.id;
+    this.newActivityTitle = activity.title;
+    this.generatedDescription = activity.description;
+    this.newActivityTopic = '';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  cancelEdit() {
+    this.resetForm();
+  }
+
+  resetForm() {
+    this.editingActivityId = null;
+    this.newActivityTitle = '';
+    this.newActivityTopic = '';
+    this.generatedDescription = '';
   }
 
   deleteActivity(id: number) {
     if(confirm('¿Seguro que deseas eliminar esta actividad?')) {
       this.http.delete(`${this.apiUrl}/activities/${id}`).subscribe({
         next: () => {
-          this.successMessage = 'Actividad eliminada';
+          this.showToast('success', 'Actividad eliminada');
           this.loadActivities();
         },
-        error: (err) => this.errorMessage = 'Error al eliminar'
+        error: (err) => this.showToast('error', 'Error al eliminar')
       });
     }
   }

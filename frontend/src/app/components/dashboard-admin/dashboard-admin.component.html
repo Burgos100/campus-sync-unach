@@ -5,11 +5,13 @@
 <h1 class="text-headline-xl font-headline-xl text-on-surface mb-2">Panel de Administración</h1>
 <p class="text-body-lg font-body-lg text-secondary">Bienvenido, <span class="font-bold">{{ user?.name }}</span></p>
 </div>
-<div *ngIf="errorMessage" class="bg-error/10 text-error px-4 py-3 rounded-xl text-sm font-medium border border-error/20 flex items-center gap-2 mb-6">
+<!-- Toast Notifications -->
+<div *ngIf="errorMessage" class="fixed bottom-6 right-6 bg-error text-on-error px-6 py-4 rounded-xl text-body-md font-bold shadow-2xl flex items-center gap-3 z-50 animate-fade-in-up">
   <span class="material-symbols-outlined">error</span>
   <span>{{ errorMessage }}</span>
 </div>
-<div *ngIf="successMessage" class="bg-tertiary/10 text-tertiary px-4 py-3 rounded-xl text-sm font-medium border border-tertiary/20 flex items-center gap-2 mb-6">
+<div *ngIf="successMessage" class="fixed bottom-6 right-6 bg-tertiary text-on-tertiary px-6 py-4 rounded-xl text-body-md font-bold shadow-2xl flex items-center gap-3 z-50 animate-fade-in-up">
+  <span class="material-symbols-outlined">check_circle</span>
   <span>{{ successMessage }}</span>
 </div>
 
@@ -19,7 +21,7 @@
 <section class="bg-surface-container-lowest rounded-xl p-8 card-shadow flex flex-col h-full">
 <div class="flex items-center gap-3 mb-8">
 <span class="material-symbols-outlined text-primary text-3xl">add_circle</span>
-<h2 class="text-headline-md font-headline-md text-on-surface">Crear Actividad con IA</h2>
+<h2 class="text-headline-md font-headline-md text-on-surface">{{ editingActivityId ? 'Editar Actividad' : 'Crear Actividad con IA' }}</h2>
 </div>
 <div class="space-y-6 flex-grow">
 <div>
@@ -33,12 +35,20 @@
 <button (click)="generateDescription()" class="bg-primary text-on-primary px-6 py-2 rounded-lg font-bold hover:brightness-110 active:scale-95 transition-all text-label-sm font-label-sm">Generar</button>
 </div>
 </div>
-<div class="p-6 rounded-xl bg-surface-container-lowest border-2 border-dashed border-outline-variant/30 min-h-[160px] flex items-center justify-center relative">
+<div class="p-6 rounded-xl bg-surface-container-lowest border-2 border-dashed border-outline-variant/30 min-h-[160px] flex flex-col justify-center relative">
     <p *ngIf="!generatedDescription" class="text-body-md font-body-md text-secondary italic opacity-60 text-center">La descripción generada por IA aparecerá aquí...</p>
-    <p *ngIf="generatedDescription" class="text-body-md font-body-md text-primary">{{ generatedDescription }}</p>
+    <div *ngIf="generatedDescription" class="w-full">
+        <label class="block text-label-sm font-label-sm text-secondary mb-2">Descripción (Puedes editarla antes de guardar)</label>
+        <textarea [(ngModel)]="generatedDescription" class="w-full bg-surface-container-low border border-outline-variant rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-body-md font-body-md text-primary resize-y min-h-[100px]"></textarea>
+    </div>
   </div>
 </div>
-<button (click)="createActivity()" [disabled]="!generatedDescription || !newActivityTitle" class="mt-8 w-full bg-tertiary-fixed-dim text-on-tertiary-fixed-variant font-bold py-4 rounded-xl shadow-sm hover:shadow-md active:scale-95 transition-all text-headline-md disabled:opacity-50 disabled:cursor-not-allowed">Guardar Actividad</button>
+<div class="flex gap-4 mt-8">
+  <button *ngIf="editingActivityId" (click)="cancelEdit()" class="w-1/3 bg-surface-container-high text-on-surface font-bold py-4 rounded-xl shadow-sm hover:shadow-md active:scale-95 transition-all text-headline-md">Cancelar</button>
+  <button (click)="createActivity()" [disabled]="!generatedDescription || !newActivityTitle" class="flex-grow bg-tertiary-fixed-dim text-on-tertiary-fixed-variant font-bold py-4 rounded-xl shadow-sm hover:shadow-md active:scale-95 transition-all text-headline-md disabled:opacity-50 disabled:cursor-not-allowed">
+    {{ editingActivityId ? 'Actualizar Actividad' : 'Guardar Actividad' }}
+  </button>
+</div>
 </section>
 <!-- Right Column: Management List -->
 <section class="bg-surface-container-lowest rounded-xl p-8 card-shadow flex flex-col h-full">
@@ -58,9 +68,10 @@
         </div>
       </div>
       <p class="text-body-md font-body-md text-secondary line-clamp-3 mb-6">{{ act.description }}</p>
-      <div class="flex gap-3">
+      <div class="flex gap-2">
         <button (click)="viewParticipants(act)" class="flex-grow bg-surface-container-lowest border border-outline-variant py-2.5 rounded-lg text-label-sm font-label-sm font-bold hover:bg-surface-variant/30 transition-all">Participantes</button>
-        <button (click)="deleteActivity(act.id)" class="px-4 py-2.5 text-error font-bold text-label-sm font-label-sm hover:bg-error-container/20 rounded-lg transition-all">Eliminar</button>
+        <button (click)="startEditActivity(act)" class="px-4 py-2.5 text-primary font-bold text-label-sm font-label-sm hover:bg-primary-container/20 rounded-lg transition-all border border-outline-variant">Editar</button>
+        <button (click)="deleteActivity(act.id)" class="px-4 py-2.5 text-error font-bold text-label-sm font-label-sm hover:bg-error-container/20 rounded-lg transition-all border border-error/30">Eliminar</button>
       </div>
     </div>
   </div>

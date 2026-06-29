@@ -3,20 +3,9 @@
   <header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-4 md:px-margin-desktop h-16 bg-surface/95 backdrop-blur-sm border-b border-outline-variant">
     <div class="flex items-center gap-8">
       <span class="text-headline-md font-headline-md font-bold text-primary">CampusSync UnACh</span>
-      <nav class="hidden md:flex items-center gap-6" *ngIf="user">
-        <ng-container *ngIf="user.role === 'Admin'">
-          <a routerLink="/admin" class="text-secondary hover:text-primary transition-colors text-label-sm font-label-sm">Actividades</a>
-          <a routerLink="/admin/usuarios" class="text-secondary hover:text-primary transition-colors text-label-sm font-label-sm">Usuarios</a>
-          <a routerLink="/admin/reportes" class="text-secondary hover:text-primary transition-colors text-label-sm font-label-sm">Reportes</a>
-        </ng-container>
-      </nav>
     </div>
     <div class="flex items-center gap-4">
       <ng-container *ngIf="user">
-        <div class="relative hidden sm:block">
-          <input class="bg-surface-container-low border border-outline-variant rounded-full px-4 py-1.5 text-label-sm w-64 focus:ring-2 focus:ring-primary/20 outline-none" placeholder="Buscar..." type="text"/>
-          <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-secondary scale-75">search</span>
-        </div>
         <button (click)="logout()" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-surface-variant/30 text-primary hover:bg-surface-variant/50 transition-all text-label-sm font-label-sm">
           Cerrar Sesión
           <span class="material-symbols-outlined text-[18px]">logout</span>
