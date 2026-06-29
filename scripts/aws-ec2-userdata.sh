@@ -1,52 +1,42 @@
 #!/bin/bash
 # =========================================================================
-# Script de User Data para AWS EC2 (Basado en Ubuntu 20.04 / 22.04 / 24.04)
+# Script de User Data para AWS EC2 - CampusSync
 # =========================================================================
 
-# 1. Actualizar el sistema y crear SWAP (Para evitar Out Of Memory en t2.micro)
-apt-get update -y
-apt-get upgrade -y
+# 1. Crear Memoria Virtual (SWAP) -> ¡ESTO EVITA QUE EL T2.MICRO COLAPSE!
 fallocate -l 2G /swapfile
 chmod 600 /swapfile
 mkswap /swapfile
 swapon /swapfile
-echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+echo '/swapfile none swap sw 0 0' >> /etc/fstab
 
 # 2. Instalar herramientas básicas y Docker
-apt-get install git curl unzip -y
-apt-get install docker.io -y
-
-# Habilitar y arrancar Docker
+apt-get update -y
+apt-get install git curl unzip docker.io -y
 systemctl start docker
 systemctl enable docker
 usermod -aG docker ubuntu
 
-# 3. Instalar Docker Compose (última versión)
+# 3. Instalar Docker Compose
 curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 chmod +x /usr/local/bin/docker-compose
 
-# 4. Clonar el repositorio
-# ¡IMPORTANTE! Reemplaza la URL de abajo con la de tu repositorio de GitHub.
-# Si tu repositorio es privado, usa un token de acceso personal (PAT):
-# git clone https://<TU_TOKEN>@github.com/tu-usuario/tu-repo.git campus-sync
-
+# 4. Clonar el repositorio (Apuntando a la rama master donde subimos todo lo nuevo)
 cd /home/ubuntu
-git clone https://github.com/Burgos100/campus-sync-unach.git campus-sync
+git clone -b master https://github.com/Burgos100/campus-sync-unach.git campus-sync
 cd campus-sync
 
 # 5. Configurar Variables de Entorno de forma segura (.env)
 cat <<EOT >> .env
-DB_ROOT_PASSWORD=root_password_seguro
+DB_ROOT_PASSWORD=CampusSeguro_2026!
 DB_NAME=campussync
 DB_USER=admin
 DB_PASSWORD=admin_password_seguro
 PORT=3000
-GEMINI_API_KEY=TU_API_KEY_AQUI
+GEMINI_API_KEY=REEMPLAZA_ESTO_POR_TU_API_KEY_REAL
 EOT
 
-# Ajustar permisos para el usuario ubuntu
 chown -R ubuntu:ubuntu /home/ubuntu/campus-sync
 
 # 6. Desplegar la aplicación con Docker Compose
-# Ejecutamos como el usuario ubuntu para no usar root directamente en compose si no es necesario
 su - ubuntu -c "cd /home/ubuntu/campus-sync && docker-compose up -d --build"
