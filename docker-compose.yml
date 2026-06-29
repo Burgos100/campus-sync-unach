@@ -28,6 +28,7 @@ services:
       - DB_USER=${DB_USER:-admin}
       - DB_PASSWORD=${DB_PASSWORD:-admin123}
       - DB_NAME=${DB_NAME:-campussync}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
     depends_on:
       - database
 

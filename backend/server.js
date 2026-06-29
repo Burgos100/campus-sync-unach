@@ -5,7 +5,7 @@ const bcrypt = require('bcryptjs');
 const { pool, initDB } = require('./db');
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
-dotenv.config();
+dotenv.config({ path: '../.env' });
 
 const app = express();
 app.use(cors());

@@ -21,6 +21,16 @@ jobs:
         with:
           node-version: '18'
 
+      - name: Create .env file using GitHub Secrets
+        run: |
+          echo "DB_ROOT_PASSWORD=${{ secrets.DB_ROOT_PASSWORD }}" >> .env
+          echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
+          echo "DB_USER=${{ secrets.DB_USER }}" >> .env
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+          echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" >> .env
+          # También proveemos las variables al entorno del backend
+          cp .env backend/.env
+
       # ---- Backend Pasos ----
       - name: Install Dependencies (Backend)
         run: cd backend && npm ci || npm install
@@ -33,7 +43,10 @@ jobs:
         env:
           # Uso de GitHub Secrets para variables sensibles (Requisito de la rúbrica)
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          DB_HOST: localhost
+          DB_USER: ${{ secrets.DB_USER }}
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_NAME: ${{ secrets.DB_NAME }}
 
       # ---- Frontend Pasos ----
       - name: Install Dependencies (Frontend)
