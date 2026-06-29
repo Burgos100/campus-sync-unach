@@ -29,7 +29,7 @@ export class AlumnoInscripcionesComponent implements OnInit {
       return;
     }
 
-    this.http.get<any[]>(`http://localhost:3000/api/users/${user.id}/enrollments`)
+    this.http.get<any[]>(`http://${window.location.hostname}:3000/api/users/${user.id}/enrollments`)
       .subscribe({
         next: (data) => {
           this.inscripciones = data;
