@@ -56,7 +56,6 @@ Se aplicaron múltiples capas de seguridad:
 
 A continuación, se presentan las evidencias del funcionamiento, despliegue y validación del proyecto:
 
-![Evidencia 1](./docs/img/Imagen1.png)
 ![Evidencia 2](./docs/img/Imagen2.png)
 ![Evidencia 3](./docs/img/Imagen3.png)
 ![Evidencia 4](./docs/img/Imagen4.png)
